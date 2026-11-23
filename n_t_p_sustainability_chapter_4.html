@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICAEW Sustainability — Chapter 4: Sustainability in business</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+
+    /* 3D Flashcard Flip Animation */
+    .perspective-1000 {
+      perspective: 1200px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+
+    /* Smooth Card Entrance */
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-slide {
+      animation: fadeSlide 0.22s ease-out;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ==================== STICKY HEADER ==================== -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <!-- Brand Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#059669] to-[#047857] flex items-center justify-center text-white font-extrabold text-sm shadow-sm shrink-0">
+          C4
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">ICAEW Sustainability — Chapter 4: Sustainability in business</h1>
+          <p class="text-xs text-slate-500">80 mục câu hỏi (Q1–Q59) • Giao diện Carousel • Flashcards</p>
+        </div>
+      </div>
+
+      <!-- Top Navigation Tabs -->
+      <nav class="flex bg-slate-100 p-1 rounded-xl w-full md:w-auto shrink-0">
+        <button id="tab-quiz" onclick="switchTab('quiz')" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-[#047857] shadow-sm">
+          Trắc nghiệm (Carousel)
+        </button>
+        <button id="tab-flashcards" onclick="switchTab('flashcards')" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900">
+          Flashcards (22 thẻ)
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7">
+
+    <!-- ==================== TAB 1: QUIZ CAROUSEL ==================== -->
+    <section id="view-quiz" class="space-y-4 sm:space-y-5">
+
+      <!-- Mode & Cycle Control Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <!-- Study Mode Toggle -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Chế độ:</span>
+          <div class="inline-flex bg-slate-100 p-1 rounded-xl">
+            <button id="mode-practice" onclick="setQuizMode('practice')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-[#059669] text-white shadow-sm">
+              Chế độ Luyện tập
+            </button>
+            <button id="mode-exam" onclick="setQuizMode('exam')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">
+              Chế độ Kiểm tra
+            </button>
+          </div>
+        </div>
+
+        <!-- Cycle & Quick Actions -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span id="cycle-badge" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-[#047857] text-xs font-bold border border-emerald-200/70">
+            Chu kỳ #1 (80 câu)
+          </span>
+          <button onclick="openFlaggedDrawer()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <span>Phân vân</span>
+            <span id="header-flag-count" class="px-1.5 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-bold">0</span>
+          </button>
+          <button onclick="openHistoryModal()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+            Lịch sử chu kỳ
+          </button>
+          <button onclick="startNewCycle(true)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+            ↻ Chu kỳ mới
+          </button>
+          <button id="btn-submit-exam" onclick="finishCycle()" class="hidden px-3.5 py-1.5 rounded-xl bg-[#047857] hover:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition-colors">
+            Nộp bài & Chấm điểm
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress, Live Error Rate & Navigator Drawer Trigger -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm mb-2.5">
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+            <span class="font-semibold text-slate-700">
+              Tiến độ: <span id="progress-text" class="font-bold text-[#047857]">0 / 80 câu (0%)</span>
+            </span>
+            <span id="live-correct-badge" class="hidden px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+              Đúng: 0
+            </span>
+            <span id="live-wrong-badge" class="hidden px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">
+              Tỷ lệ sai: 0% (0 câu)
+            </span>
+          </div>
+          <button onclick="openNavigatorDrawer()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#047857] text-xs font-semibold transition-colors border border-emerald-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>Bảng câu hỏi</span>
+          </button>
+        </div>
+        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full bg-gradient-to-r from-[#059669] to-teal-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Exam Graded Banner -->
+      <div id="exam-review-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <p class="text-sm font-bold text-emerald-950">Đã chấm điểm bài kiểm tra!</p>
+          <p id="exam-review-stats" class="text-xs text-emerald-800 mt-0.5"></p>
+        </div>
+        <button onclick="openSummaryModal()" class="px-4 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold shrink-0 shadow-sm">
+          Xem bảng tổng kết
+        </button>
+      </div>
+
+      <!-- Carousel Question Card -->
+      <article id="question-card" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-8 animate-fade-slide">
+        <!-- Card Meta Row -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-100">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="q-position" class="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">Câu 1 / 80</span>
+            <span id="q-original-id" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">Q1</span>
+            <span id="q-lo-badge" class="px-2.5 py-1 rounded-full bg-emerald-50 text-[#047857] text-xs font-semibold border border-emerald-100">LO 4d</span>
+            <span id="q-type-badge" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">Chọn 1 đáp án</span>
+          </div>
+
+          <!-- Flag Button -->
+          <button id="btn-flag" onclick="toggleFlagCurrent()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            <span id="btn-flag-text">Phân vân / Chọn lụi</span>
+          </button>
+        </div>
+
+        <!-- Question Body (Scenario + Requirement) -->
+        <div class="mb-6 space-y-3">
+          <div id="q-scenario-box" class="hidden p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Tình huống (Scenario)</p>
+            <p id="q-scenario-text" class="text-sm sm:text-[15px] text-slate-700 leading-relaxed whitespace-pre-line"></p>
+          </div>
+          <div>
+            <p class="text-[11px] font-bold uppercase tracking-wider text-[#059669] mb-1">Câu hỏi & Yêu cầu (Requirement)</p>
+            <h2 id="q-text" class="text-base sm:text-lg font-bold text-slate-900 leading-snug whitespace-pre-line"></h2>
+          </div>
+        </div>
+
+        <!-- Options List -->
+        <div id="q-options" class="space-y-3"></div>
+
+        <!-- Multi-select Check Button (Practice Mode Only) -->
+        <div id="multi-check-wrap" class="hidden mt-5">
+          <button onclick="submitMultiPractice()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-sm font-semibold shadow-sm transition-colors">
+            Kiểm tra đáp án
+          </button>
+        </div>
+
+        <!-- Official Solution & LO Box -->
+        <div id="explanation-box" class="hidden mt-6 p-4 sm:p-5 rounded-2xl border">
+          <div class="flex flex-wrap items-center gap-2 mb-2.5">
+            <span id="exp-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold"></span>
+            <span class="text-xs font-semibold text-slate-500">Giải thích cốt lõi (ICAEW Solution)</span>
+            <span id="exp-lo-tag" class="ml-auto px-2 py-0.5 rounded-md bg-white/80 text-[#047857] text-[11px] font-bold border border-emerald-100"></span>
+          </div>
+          <p id="exp-correct-answer" class="text-xs sm:text-sm font-bold text-slate-900 mb-2"></p>
+          <p id="exp-text" class="text-sm text-slate-700 leading-relaxed whitespace-pre-line"></p>
+        </div>
+
+        <!-- Carousel Prev / Next Footer -->
+        <div class="mt-8 pt-5 border-t border-slate-100 flex items-center justify-between gap-3">
+          <button id="btn-prev" onclick="prevQuestion()" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 text-sm font-semibold transition-colors">
+            ← Câu trước
+          </button>
+          <span class="hidden sm:inline text-xs text-slate-400">Dùng phím ← / → để chuyển câu</span>
+          <button id="btn-next" onclick="nextQuestion()" class="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-sm font-semibold shadow-sm transition-colors">
+            Câu tiếp →
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- ==================== TAB 2: FLASHCARDS ==================== -->
+    <section id="view-flashcards" class="hidden space-y-5">
+      <!-- Flashcard Controls Header -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">Flashcards cốt lõi — Chapter 4 (22 thẻ)</h2>
+          <p class="text-xs text-slate-500">Chạm vào thẻ hoặc nhấn phím <kbd class="px-1.5 py-0.5 bg-slate-100 rounded border border-slate-300 text-[10px] font-bold">Space</kbd> để lật 3D</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="inline-flex bg-slate-100 p-1 rounded-xl">
+            <button id="fc-filter-all" onclick="setFlashcardFilter('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#047857] shadow-sm">
+              Tất cả (<span id="fc-total-count">22</span>)
+            </button>
+            <button id="fc-filter-review" onclick="setFlashcardFilter('review')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600">
+              Cần ôn lại (<span id="fc-review-count">22</span>)
+            </button>
+            <button id="fc-filter-mastered" onclick="setFlashcardFilter('mastered')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600">
+              Đã nhớ (<span id="fc-mastered-count">0</span>)
+            </button>
+          </div>
+          <button onclick="shuffleFlashcards()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+            ↻ Xáo trộn
+          </button>
+        </div>
+      </div>
+
+      <!-- Mastery Progress Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs sm:text-sm mb-2">
+          <span id="fc-position" class="font-bold text-slate-800">Thẻ 1 / 22</span>
+          <span id="fc-mastered-stats" class="font-bold text-[#047857]">Đã nhớ: 0 / 22 (0%)</span>
+        </div>
+        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+          <div id="fc-progress-bar" class="h-full bg-gradient-to-r from-[#059669] to-teal-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 3D Flip Card -->
+      <div class="perspective-1000 w-full max-w-2xl mx-auto">
+        <div id="fc-card" onclick="flipFlashcard()" class="relative w-full min-h-[330px] sm:min-h-[370px] cursor-pointer transform-style-3d">
+          <!-- Front Face -->
+          <div class="absolute inset-0 backface-hidden bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 flex flex-col justify-between">
+            <div class="flex items-center justify-between gap-2">
+              <span id="fc-front-tag" class="px-3 py-1 rounded-full bg-emerald-50 text-[#047857] text-xs font-bold border border-emerald-100">FC1</span>
+              <span id="fc-status-pill" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">Chưa đánh giá</span>
+            </div>
+            <div class="text-center my-auto py-4">
+              <p class="text-[11px] uppercase tracking-widest text-slate-400 font-bold mb-2">Khái niệm & Bẫy thi trọng tâm</p>
+              <h3 id="fc-front-text" class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug"></h3>
+            </div>
+            <p class="text-center text-xs text-slate-400">Chạm vào thẻ hoặc nhấn Space để lật xem giải thích</p>
+          </div>
+
+          <!-- Back Face -->
+          <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-[#059669] to-[#047857] text-white rounded-3xl shadow-md p-6 sm:p-10 flex flex-col justify-between overflow-y-auto">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-3 py-1 rounded-full bg-white/15 text-white text-xs font-bold">Kiến thức cốt lõi</span>
+              <span id="fc-back-tag" class="text-xs text-emerald-100 font-semibold"></span>
+            </div>
+            <div class="my-auto py-3">
+              <p id="fc-back-text" class="text-sm sm:text-base leading-relaxed font-medium whitespace-pre-line"></p>
+            </div>
+            <p class="text-center text-xs text-emerald-200">Chạm để lật lại mặt trước</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flashcard Action Bar -->
+      <div class="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+        <button onclick="prevFlashcard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-colors">
+          ← Thẻ trước
+        </button>
+
+        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-center">
+          <button onclick="markFlashcard('review')" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-sm font-semibold transition-colors">
+            Cần ôn lại
+          </button>
+          <button onclick="markFlashcard('mastered')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-sm font-semibold shadow-sm transition-colors">
+            ✓ Đã nhớ
+          </button>
+        </div>
+
+        <button onclick="nextFlashcard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-colors">
+          Thẻ tiếp →
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== QUESTION NAVIGATOR DRAWER ==================== -->
+  <div id="navigator-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this) closeNavigatorDrawer()">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl animate-fade-slide">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Bảng câu hỏi (Chapter 4)</h3>
+          <p id="nav-modal-subtitle" class="text-xs text-slate-500 mt-0.5">Chọn số thứ tự để nhảy nhanh tới câu hỏi</p>
+        </div>
+        <button onclick="closeNavigatorDrawer()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <div class="px-5 pt-4 flex flex-wrap items-center gap-3 text-xs text-slate-600">
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-200 inline-block"></span> Chưa làm</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Đúng</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500 inline-block"></span> Sai</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-teal-500 inline-block"></span> Đã chọn (Thi)</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Phân vân</span>
+      </div>
+
+      <div class="p-5 overflow-y-auto">
+        <div id="nav-grid" class="grid grid-cols-6 sm:grid-cols-10 gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLAGGED QUESTIONS DRAWER ==================== -->
+  <div id="flagged-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this) closeFlaggedDrawer()">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl animate-fade-slide">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Câu hỏi Phân vân / Chọn lụi</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Lưu bền vững trên trình duyệt để bạn ôn lại trước ngày thi</p>
+        </div>
+        <button onclick="closeFlaggedDrawer()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <div class="px-5 pt-4 flex flex-wrap items-center justify-between gap-2">
+        <span id="flagged-modal-count" class="text-xs font-bold text-amber-800">0 câu đã đánh dấu</span>
+        <button id="btn-practice-flagged-modal" onclick="startWrongAndFlaggedCycle()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white text-xs font-semibold shadow-sm transition-colors">
+          Luyện riêng câu sai & phân vân
+        </button>
+      </div>
+
+      <div id="flagged-modal-list" class="p-5 overflow-y-auto space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- ==================== CYCLE HISTORY MODAL ==================== -->
+  <div id="history-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this) closeHistoryModal()">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl animate-fade-slide">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Lịch sử chu kỳ — Chapter 4</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Theo dõi sự tiến bộ và xu hướng tỷ lệ sai qua từng chu kỳ</p>
+        </div>
+        <button onclick="closeHistoryModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <div id="history-modal-body" class="p-5 overflow-y-auto"></div>
+
+      <div class="p-4 border-t border-slate-100 flex items-center justify-between">
+        <div id="reset-confirm-area">
+          <button onclick="showResetConfirm()" class="text-xs font-semibold text-rose-600 hover:text-rose-800 underline">
+            Đặt lại toàn bộ dữ liệu Chapter 4
+          </button>
+        </div>
+        <button onclick="closeHistoryModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== END-OF-CYCLE SUMMARY MODAL ==================== -->
+  <div id="summary-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeSummaryModal()">
+    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-7 shadow-xl animate-fade-slide">
+      <div class="text-center mb-5">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-[#047857] flex items-center justify-center text-2xl font-extrabold mb-3">
+          ✓
+        </div>
+        <h3 class="text-xl font-extrabold text-slate-900">Tổng kết chu kỳ</h3>
+        <p id="modal-cycle-subtitle" class="text-xs text-slate-500 mt-1"></p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-100 text-center">
+          <p class="text-xs text-emerald-700 font-medium">Điểm / Tỷ lệ đúng</p>
+          <p id="modal-correct" class="text-xl font-extrabold text-emerald-700 mt-0.5">0/80 (0%)</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-center">
+          <p class="text-xs text-rose-700 font-medium">Tỷ lệ sai</p>
+          <p id="modal-error-rate" class="text-2xl font-extrabold text-rose-600 mt-0.5">0%</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+          <p class="text-xs text-slate-600 font-medium">Số câu sai</p>
+          <p id="modal-wrong" class="text-xl font-bold text-slate-800 mt-0.5">0</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-100 text-center">
+          <p class="text-xs text-amber-700 font-medium">Phân vân / Chọn lụi</p>
+          <p id="modal-flagged" class="text-xl font-bold text-amber-700 mt-0.5">0</p>
+        </div>
+      </div>
+
+      <!-- Recent History Mini-Table -->
+      <div id="modal-history-preview" class="mb-5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70"></div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-2.5">
+        <button onclick="startNewCycle(true)" class="w-full py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-sm font-semibold shadow-sm transition-colors">
+          Bắt đầu chu kỳ mới (Xáo trộn 80 câu)
+        </button>
+        <button id="modal-btn-wrong-and-flagged" onclick="startWrongAndFlaggedCycle()" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold shadow-sm transition-colors">
+          Luyện riêng câu sai & phân vân
+        </button>
+        <button onclick="closeSummaryModal()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors">
+          Đóng & xem lại chi tiết từng câu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg"></div>
+
+  <script>
+    // =========================================================================
+    // 1. COMPLETE VERIFIED QUESTION BANK — CHAPTER 4 (ALL 80 ITEMS, Q1–Q59c)
+    // =========================================================================
+    const QUESTIONS = [
+      {
+        id: "Q1", lo: "LO 4d", selectCount: 1,
+        q: "Obie plc (Obie) is planning to issue a sustainability-linked bond to finance projects aimed at reducing its carbon emissions. The terms of the bond state that the interest rate will be adjusted based on Obie's ability to achieve significant reductions in Scope 1 and Scope 2 greenhouse gas (GHG) emissions within a set timeframe.\n\nRequirement: What mechanism is typically used in sustainability-linked bonds to adjust the interest rate if Obie fails to meet its sustainability performance targets?",
+        opts: [{k:"A",t:"Interest rate step-up"},{k:"B",t:"Interest rate step-down"},{k:"C",t:"Fixed interest"},{k:"D",t:"Floating charge"}],
+        ans: ["A"],
+        exp: "Interest rate step-up refers to an increase in the interest rate of the bonds which applies if the issuer fails to meet its predetermined targets. Interest rate step-down (B) acts as a reward for exceeding targets. The interest rate does not vary for fixed interest bonds (C) and a floating charge is a form of debt security (D)."
+      },
+      {
+        id: "Q2", lo: "LO 4d", selectCount: 2,
+        q: "The local government authority for Tortuga, a coastal town, is considering issuing a blue bond to fund planned sustainability projects both within its operations and the local area in which it is based.\n\nRequirement: Which two of the following projects would be suitable for using the proceeds of the blue bond issue?",
+        opts: [{k:"A",t:"To install solar panels on the roof of the authority's head office"},{k:"B",t:"To purchase a fleet of energy-efficient vans to be used in services provided by the authority's employees"},{k:"C",t:"To support the restoration of the Tortuga coastline"},{k:"D",t:"To purchase new technology to improve the quality of wastewater treatment before it flows into the ocean"},{k:"E",t:"To create new job opportunities for recent school leavers in the area where Tortuga is located"}],
+        ans: ["C","D"],
+        exp: "The proceeds of blue bonds can only be used to finance initiatives that benefit the health of the world's oceans and coastal ecosystems. Installing solar panels (A) and purchasing a fleet of energy efficient vans (B) would be suited to a green bond, and the creation of job opportunities (E) would be suited to a social bond."
+      },
+      {
+        id: "Q3", lo: "LO 4d", selectCount: 1,
+        q: "Despo Ltd (Despo) is seeking sustainable finance to support the installation of solar panels across its facilities. The directors of Despo are committed to using the proceeds of any financing for the specific purpose stated and not for general purposes.\n\nRequirement: Which financing option would be most suitable for funding this environmental project?",
+        opts: [{k:"A",t:"Sustainability-linked loan"},{k:"B",t:"Green bond"},{k:"C",t:"Social bond"},{k:"D",t:"Equity finance"}],
+        ans: ["B"],
+        exp: "Green bonds (B) are specifically designed for funding projects that have positive environmental benefits, such as installing solar panels. Sustainability-linked loans (A) are general purpose loans, not use of proceeds, and therefore do not match the intended purpose of the finance. Social bonds (C) are used to finance projects with social, not environmental, objectives. Equity finance (D) is a form of business finance but is not sustainable finance as required by Despo."
+      },
+      {
+        id: "Q4", lo: "LO 4d", selectCount: 1,
+        q: "Brophy plc (Brophy) is aiming to enhance its sustainability performance by reducing greenhouse gas (GHG) emissions, increasing its energy efficiency, and promoting responsible sourcing of raw materials. The company is looking for financing options that are flexible but tied to its overall sustainability goals.\n\nRequirement: Which type of financing would best suit Brophy's needs?",
+        opts: [{k:"A",t:"Social bond"},{k:"B",t:"Sustainability-linked loan"},{k:"C",t:"Green loan"},{k:"D",t:"Blue bond"}],
+        ans: ["B"],
+        exp: "Sustainability-linked loans are designed to be used for general corporate purposes and tie the terms of the finance, such as interest rates, to the borrower's achievement of specific sustainability performance targets, thereby offering the flexibility Brophy requires to meet its sustainability goals. Green loans (C) are use of proceeds finance which are not flexible. Social bonds (A) finance projects with social rather than environmental objectives, and blue bonds (D) are specific to ocean/coastal projects."
+      },
+      {
+        id: "Q5", lo: "LO 4a", selectCount: 1,
+        q: "Smartsave plc (Smartsave) is an online-only supermarket. Smartsave customers place orders through its website and the orders are then delivered to customers by a fleet of delivery vans. To reduce its carbon footprint, the company has decided to use logistics software to select efficient delivery routes which will minimise fuel consumption and emissions.\n\nRequirement: Which primary activity, as identified by Porter's value chain, is directly impacted by Smartsave's decision?",
+        opts: [{k:"A",t:"Inbound logistics"},{k:"B",t:"Operations"},{k:"C",t:"Outbound logistics"},{k:"D",t:"Marketing and sales"}],
+        ans: ["C"],
+        exp: "The decision to optimise the distribution system by using logistics software to select efficient delivery routes directly impacts outbound logistics, as it involves the distribution and delivery of products to customers. Inbound logistics (A) involves the receipt and storage of inventory from suppliers; operations involve the processing of customer orders (B); and marketing and sales (D) involve promoting and selling the products to customers."
+      },
+      {
+        id: "Q6", lo: "LO 4a", selectCount: 3,
+        q: "Enernow Ltd (Enernow) is a newly established company operating in the renewable energy sector. Its mission is to provide sustainable energy solutions to customers whilst achieving long-term growth and profitability. The directors of Enernow are drafting the company's sustainable business strategy. They are aware that several factors will influence their strategy as they move forward.\n\nRequirement: Which three of the following factors are likely to influence Enernow's sustainable strategy?",
+        opts: [{k:"A",t:"Regulatory requirements for renewable energy production"},{k:"B",t:"The company's historical financial performance"},{k:"C",t:"Industry-wide innovations relating to energy storage"},{k:"D",t:"Laws relating to minimum wages rates for employees"},{k:"E",t:"The expectations of customers"}],
+        ans: ["A","C","E"],
+        exp: "Enernow is a newly established company and therefore historical financial performance (B) is not relevant. Laws relating to minimum wage rates (D) are not likely to influence overall sustainability strategy."
+      },
+      {
+        id: "Q7", lo: "LO 4a", selectCount: 1,
+        q: "FreshCasa SpA (FreshCasa), a home goods retailer, has recently been criticised for its supply chain operations, particularly concerning the environmental and social practices of some of its suppliers. To address these concerns and improve the sustainability of its supply chain, FreshCasa plans to adopt more ethical sourcing methods.\n\nRequirement: Which of the following measures would demonstrate ethical sourcing and improve the social sustainability of FreshCasa's supply chain?",
+        opts: [{k:"A",t:"Implementing automated ordering systems to streamline procurement"},{k:"B",t:"Implementing a policy to prioritise purchasing goods from the lowest cost suppliers"},{k:"C",t:"Partnering exclusively with suppliers that are fair trade certified"},{k:"D",t:"Reducing the frequency of product deliveries to reduce emissions from inbound logistics"}],
+        ans: ["C"],
+        exp: "Partnering exclusively with suppliers that are fair trade certified (C) would demonstrate FreshCasa's commitment to ethical sourcing, as it ensures that suppliers meet recognised standards. Focusing solely on short-term cost savings (B) does not address the sustainability issues within the supply chain. Implementing automated ordering systems (A) can improve efficiency but does not specifically address ethical sourcing needs. Reducing the frequency of product deliveries (D) to reduce emissions will help with environmental sustainability but does not improve social sustainability."
+      },
+      {
+        id: "Q8a", lo: "LO 4a", selectCount: 1,
+        q: "Marron SA (Marron) has recently decided to integrate sustainability into its core business strategy. The directors are developing a sustainability plan and are considering various actions to improve the sustainability of its business.\n\nRequirement (1/3): Identify whether the following statement is true or false:\nReducing employee benefits to invest in energy efficient machinery will help Marron to become more sustainable.",
+        opts: [{k:"A",t:"True"},{k:"B",t:"False"}],
+        ans: ["B"],
+        exp: "Reducing employee benefits will not help Marron to become more sustainable as the fair treatment of employees is an important factor in social sustainability."
+      },
+      {
+        id: "Q8b", lo: "LO 4a", selectCount: 1,
+        q: "Marron SA (Marron) has recently decided to integrate sustainability into its core business strategy. The directors are developing a sustainability plan and are considering various actions to improve the sustainability of its business.\n\nRequirement (2/3): Identify whether the following statement is true or false:\nCreating a 'take-back' programme for customers to return products at the end of their lives will help Marron to become more sustainable.",
+        opts: [{k:"C",t:"True"},{k:"D",t:"False"}],
+        ans: ["C"],
+        exp: "Take-back schemes help to ensure the responsible disposal of products which contributes to environmental sustainability."
+      },
+      {
+        id: "Q8c", lo: "LO 4a", selectCount: 1,
+        q: "Marron SA (Marron) has recently decided to integrate sustainability into its core business strategy. The directors are developing a sustainability plan and are considering various actions to improve the sustainability of its business.\n\nRequirement (3/3): Identify whether the following statement is true or false:\nDetailing the environmental impacts of Marron's products on its website will allow consumers to make more informed choices and drive sustainability improvements.",
+        opts: [{k:"E",t:"True"},{k:"F",t:"False"}],
+        ans: ["E"],
+        exp: "Educating customers on the environmental impact of products encourages more responsible consumption by customers. As this information is publicly available, it will also incentivise Marron to reduce the environmental impact of its products, driving environmental sustainability improvements."
+      },
+      {
+        id: "Q9", lo: "LO 4a", selectCount: 3,
+        q: "Fluro Ltd (Fluro) is working towards improving its sustainability practices and regularly tracks its progress in various sustainability initiatives.\n\nRequirement: Which three of the following methods would be the most effective ways for Fluro to monitor its sustainability progress?",
+        opts: [{k:"A",t:"Utilising key performance indicators (KPIs) to measure and track its environmental and social impacts"},{k:"B",t:"Using data analytics software to gather and analyse real-time sustainability data"},{k:"C",t:"Conducting employee surveys to gauge sustainability progress"},{k:"D",t:"Discussing sustainability progress at annual shareholder meetings"},{k:"E",t:"Reporting performance to stakeholders by applying GRI Standards"}],
+        ans: ["A","B","E"],
+        exp: "Key performance indicators (KPIs) help businesses to effectively measure and manage their environmental and social impacts, ensuring they are on track to meet their sustainability goals (A). Technology such as data analytics software can help businesses to gather and analyse data relating to its operations, which can be useful for both internal monitoring and external reporting purposes (B). Regularly reporting on sustainability performance to stakeholders helps to maintain transparency and accountability (E). Conducting employee surveys (C) may help to identify progress in some areas, but would not be the most accurate way. Discussing sustainability progress at shareholder meetings (D) occurs infrequently and is more suited for high-level discussions rather than detailed tracking."
+      },
+      {
+        id: "Q10", lo: "LO 4a", selectCount: 1,
+        q: "Which of the following statements regarding carbon offsetting is/are correct?\n(1) Carbon offsetting directly reduces carbon emissions at the source.\n(2) Carbon offsetting can result in greenwashing claims if it is used to make a business appear more sustainable without substantial changes to operations.\n(3) Carbon offsetting promotes positive changes in business behaviour that are essential to long-term sustainability.",
+        opts: [{k:"A",t:"1 and 2 only"},{k:"B",t:"2 only"},{k:"C",t:"3 only"},{k:"D",t:"1, 2 and 3"}],
+        ans: ["B"],
+        exp: "Carbon offsetting does not reduce emissions at source. Instead, it attempts to compensate for emissions produced in one area by funding projects, such as planting trees or restoring ecosystems, that remove carbon dioxide or prevent its release in another area. Carbon offsetting can result in greenwashing as businesses claim to be more sustainable without making substantial changes to their operations. Carbon offsetting does not promote changes in behaviour essential for long-term sustainability and cannot be used as an alternative to reducing emissions because there are not enough carbon offsets available."
+      },
+      {
+        id: "Q11", lo: "LO 4b", selectCount: 3,
+        q: "Gravary Ltd (Gravary) is a large scale producer of ready-meals for sale in supermarkets. The company has recently developed a comprehensive sustainability plan; however, the directors are aware that they may face several challenges in implementing this plan.\n\nRequirement: Which three of the following are barriers Gravary may face in making progress to becoming more sustainable?",
+        opts: [{k:"A",t:"The directors cannot find a viable alternative to using plastic containers for the meals"},{k:"B",t:"The company has limited resources available for investment in energy efficient assets."},{k:"C",t:"The company's staff is very aware of sustainability issues and make a high number of suggestions for improvements"},{k:"D",t:"Regulations affecting Gravary's suppliers are expected to change in the near future to require improved traceability"},{k:"E",t:"The company often finds it difficult to obtain the data necessary to monitor progress in some areas"}],
+        ans: ["A","B","E"],
+        exp: "Having staff who are both aware and enthusiastic (C) is a benefit, as is being able to trace products to sources (D). Not being able to source an alternative to plastic packaging (A), limited resources to invest in energy efficient assets (B), and difficulty obtaining data to monitor progress (E) are all barriers to progress."
+      },
+      {
+        id: "Q12a", lo: "LO 4b", selectCount: 1,
+        q: "Cuped GmbH (Cuped) is a clothing manufacturer that has incurred additional costs as it has worked towards meeting its commitment to reducing its environmental impact.\n\nRequirement (1/3): Identify whether the following statement represents a barrier to progress towards Cuped's commitment:\nThere are viable non-harmful alternatives to the environmentally damaging chemicals Cuped uses in its manufacturing processes.",
+        opts: [{k:"A",t:"A barrier to progress"},{k:"B",t:"Not a barrier to progress"}],
+        ans: ["B"],
+        exp: "The availability of viable alternatives is not a barrier to progress and indicates an area in which Cuped could reduce its environmental impact."
+      },
+      {
+        id: "Q12b", lo: "LO 4b", selectCount: 1,
+        q: "Cuped GmbH (Cuped) is a clothing manufacturer that has incurred additional costs as it has worked towards meeting its commitment to reducing its environmental impact.\n\nRequirement (2/3): Identify whether the following statement represents a barrier to progress towards Cuped's commitment:\nCuped would be eligible for a sustainability-linked loan.",
+        opts: [{k:"C",t:"A barrier to progress"},{k:"D",t:"Not a barrier to progress"}],
+        ans: ["D"],
+        exp: "Obtaining a sustainability-linked loan would provide Cuped with the financial resources it needs to improve its sustainability practices and would provide an incentive for achieving its sustainability goals."
+      },
+      {
+        id: "Q12c", lo: "LO 4b", selectCount: 1,
+        q: "Cuped GmbH (Cuped) is a clothing manufacturer that has incurred additional costs as it has worked towards meeting its commitment to reducing its environmental impact.\n\nRequirement (3/3): Identify whether the following statement represents a barrier to progress towards Cuped's commitment:\nCuped's customers are primarily influenced by the cost of its products and not by the sustainability credentials of the products.",
+        opts: [{k:"E",t:"A barrier to progress"},{k:"F",t:"Not a barrier to progress"}],
+        ans: ["E"],
+        exp: "Stakeholder demands for inexpensive products may be a barrier to progress, particularly as Cuped has incurred additional costs in working towards its commitment."
+      },
+      {
+        id: "Q13", lo: "LO 4b", selectCount: 1,
+        q: "The directors of FLD Ltd (FLD) have found it difficult to implement the company's sustainability plan. They have identified several factors that may have contributed to this:\n(1) The directors changed the plan several times after its initial implementation.\n(2) Procurement employees often work under significant pressure to source the cheapest supplies of raw materials, which means the sustainability credentials of suppliers are not considered.\n(3) FLD operates in an industry that is subject to strict environmental regulations that frequently change.\n\nRequirement: Which of the factors identified are barriers to FLD becoming more sustainable?",
+        opts: [{k:"A",t:"1 and 2 only"},{k:"B",t:"1 and 3 only"},{k:"C",t:"2 and 3 only"},{k:"D",t:"1, 2 and 3"}],
+        ans: ["D"],
+        exp: "An unclear or changeable plan represents a barrier to becoming more sustainable and makes any plan difficult to implement. Employees that are operating under pressure to source cheap supplies without consideration of sustainability credentials is a barrier as it does not prioritise sustainable decision making. Frequently changing regulations creates uncertainty which is also a barrier."
+      },
+      {
+        id: "Q14", lo: "LO 4b", selectCount: 1,
+        q: "Mubel GmbH (Mubel) is a mid-sized company specialising in producing sustainable furniture. Despite its commitment to sustainability and its efforts in the sustainable sourcing of wood and other raw materials used in its products, Mubel is finding it challenging to fully implement its sustainability plan.\n\nRequirement: Which of the following represents a barrier to Mubel's progress towards its sustainability goals?",
+        opts: [{k:"A",t:"Mubel has an experienced senior management team"},{k:"B",t:"All of Mubel's stakeholders agree that sustainability should be a priority for the company"},{k:"C",t:"Mubel has a detailed plan that has been clearly communicated to all stakeholders"},{k:"D",t:"Mubel relies on its bank overdraft to cover everyday expenses and is not eligible for further finance"}],
+        ans: ["D"],
+        exp: "Mubel has financial constraints caused by its limited access to finance."
+      },
+      {
+        id: "Q15", lo: "LO 4b", selectCount: 2,
+        q: "Scrubop Ltd (Scrubop) is a company committed to producing eco-friendly beauty products. Despite this commitment, Scrubop is facing significant challenges in its sustainability efforts.\n\nRequirement: Which two of the following represent barriers that may have impacted on Scrubop's ability to progress towards its sustainability goals?",
+        opts: [{k:"A",t:"A change in government has resulted in regulatory uncertainty"},{k:"B",t:"There is widespread customer support for eco-friendly beauty products"},{k:"C",t:"Viable alternatives are available to the plastic packaging Scrubop currently uses"},{k:"D",t:"The directors of Scrubop are inexperienced in managing change"},{k:"E",t:"Scrubop can trace the source of its raw materials"}],
+        ans: ["A","D"],
+        exp: "Changing government regulations and an inexperienced director team can both present a barrier to progress."
+      },
+      {
+        id: "Q16", lo: "LO 4b", selectCount: 3,
+        q: "MagentTech Ltd (MagentTech) is a technology company focusing on green technology solutions. MagentTech aims to reduce its carbon footprint by 50% over the next five years and has planned several strategies to achieve this. However, progress has been slower than anticipated, and several issues have been identified that might be causing this delay.\n\nRequirement: Which three of the following factors may be barriers to progress for MagentTech?",
+        opts: [{k:"A",t:"MagentTech has a number of skilled employees familiar with measuring greenhouse gas (GHG) emissions"},{k:"B",t:"MagentTech's shareholders have concerns about the impact of change on its profitability"},{k:"C",t:"There is limited access to funding for sustainable projects in the technology industry."},{k:"D",t:"MagentTech operates in a country with a strong regulatory framework supporting green initiatives"},{k:"E",t:"It is difficult to track and verify the environmental impact of materials used by MagentTech"}],
+        ans: ["B","C","E"],
+        exp: "Shareholder concerns about profitability (B) creates a competing objective. Limited access to funding (C) creates a financial constraint. Difficulty in understanding the environmental impact of materials used (E) makes it difficult to ensure resources are sustainable. Skilled employees (A) and a strong supportive regulatory framework (D) are not barriers."
+      },
+      {
+        id: "Q17", lo: "LO 4g", selectCount: 1,
+        q: "Swarbz BV (Swarbz) recently announced to its employees that it aims to eliminate all single-use plastics in its product packaging by the end of next year. However, it does not have a detailed project plan, no approved budget for research and development, and no tracking mechanisms to measure its progress.\n\nRequirement: Which term best describes Swarbz's internal announcement?",
+        opts: [{k:"A",t:"Greenwishing"},{k:"B",t:"Greenlighting"},{k:"C",t:"Socialwashing"},{k:"D",t:"Greenhushing"}],
+        ans: ["A"],
+        exp: "Greenwishing (A) refers to the expression of ambitious sustainability goals without concrete policies, actions, plans, or accountability measures to achieve them. Greenlighting (B) highlights one specific area of progress to divert attention from poor performance elsewhere. Socialwashing (C) makes misleading claims about social responsibility efforts. Greenhushing (D) involves deliberately underreporting or hiding genuine sustainability efforts often to avoid scrutiny or backlash."
+      },
+      {
+        id: "Q18", lo: "LO 4g", selectCount: 1,
+        q: "SnacksByU Ltd (SBU) is a food and drink company that has recently made significant improvements in environmentally sustainable sourcing and waste reduction. Despite these achievements, the company chooses to 'greenhush' by not publicising these efforts in its annual reports or through its marketing channels to avoid potential scrutiny and backlash.\n\nRequirement: What is a potential drawback of SBU's decision to engage in greenhushing?",
+        opts: [{k:"A",t:"SBU will experience a significant decrease in production costs"},{k:"B",t:"SBU may face difficulty in building a strong sustainable brand image"},{k:"C",t:"SBU will face legal penalties from regulatory bodies"},{k:"D",t:"SBU will be at higher risk of lawsuits for false advertising"}],
+        ans: ["B"],
+        exp: "By not promoting its sustainability efforts, SBU might find it challenging to build and maintain a reputation as a sustainable brand, which is important in attracting environmentally conscious consumers and investors. Decreasing production costs (A) is not a guaranteed consequence. Not disclosing its efforts will not result in fines (C) or lawsuits (D) as there is no suggestion of wrongdoing."
+      },
+      {
+        id: "Q19", lo: "LO 4g", selectCount: 1,
+        q: "Bidzul plc (Bidzul) ran several social media campaigns to highlight its work with charities that address poverty and education in areas of deprivation. The campaigns led to positive feedback from consumers and a growth in sales. However, an investigation by a journalist revealed that Bidzul's involvement with the charities was far less significant than it had claimed.\n\nRequirement: Which of the following terms best describes the company's actions on social media?",
+        opts: [{k:"A",t:"Socialwashing"},{k:"B",t:"Socialhushing"},{k:"C",t:"Money laundering"},{k:"D",t:"Green laundering"}],
+        ans: ["A"],
+        exp: "Socialwashing (A) refers to the practice of a company making misleading claims about its social responsibility efforts in order to appear more socially responsible than it actually is. Socialhushing (B) and green laundering (D) are not widely used terms. Money laundering (C) is disguising the origin of proceeds of crime."
+      },
+      {
+        id: "Q20", lo: "LO 4g", selectCount: 2,
+        q: "Babo SE (Babo) is a major fashion retailer. Babo has launched a new advertising campaign stating its commitment to fair labour practices and workers' rights and claiming that all of its products are made under strict ethical conditions. However, a newspaper article revealed that some of its key suppliers use child labour and provide poor working conditions for their employees.\n\nRequirement: Which two of the following terms can be used to describe Babo's behaviour in this scenario?",
+        opts: [{k:"A",t:"Greenhushing"},{k:"B",t:"Greenwashing"},{k:"C",t:"Greenwishing"},{k:"D",t:"Socialwashing"},{k:"E",t:"Socialhushing"}],
+        ans: ["B","D"],
+        exp: "Greenwashing (B) refers to misleading intended users about how well an organisation aligns with its sustainability goals—now used in a wider context to include social sustainability too. Socialwashing (D) refers to making misleading claims about social responsibility efforts. Greenhushing (A) is hiding genuine efforts, Greenwishing (C) is ambitious goals without plans, and Socialhushing (E) is not a widely used term."
+      },
+      {
+        id: "Q21", lo: "LO 4g", selectCount: 2,
+        q: "Agave SpA (Agave) is a manufacturer and has claimed its manufacturing processes are environmentally sustainable. An environmental charity has accused Agave and others in the same industry of greenwashing and has publicly disclosed evidence to back up its accusation.\n\nRequirement: Which two of the following are potential consequences for Agave of its greenwashing?",
+        opts: [{k:"A",t:"Agave will lose their competitive edge regarding their sustainability processes"},{k:"B",t:"Agave's staff will feel motivated to improve their sustainability processes"},{k:"C",t:"Agave may face regulatory fines and legal penalties for false advertising"},{k:"D",t:"Agave's investors may lose trust in the company"},{k:"E",t:"Agave will be able to spend less on their marketing budget in future years"}],
+        ans: ["C","D"],
+        exp: "Greenwashing can result in reputational damage and loss of trust amongst stakeholders, including investors (D), and regulatory action including fines and penalties (C). Agave does not necessarily have a competitive edge (A), staff are more likely to feel demotivated (B), and the company will likely need to spend more on marketing to restore its reputation (E)."
+      },
+      {
+        id: "Q22", lo: "LO 4g", selectCount: 2,
+        q: "Strungle Ltd (Strungle) has been actively marketing its electronics products as eco-friendly, claiming that they utilise 100% recycled materials. An audit by a third-party organisation discovered that Strungle's marketing was an example of greenwashing as only a small fraction of the materials used were recycled. The majority of materials used were newly sourced and caused significant environmental damage during extraction.\n\nRequirement: What are two societal impacts of Strungle's greenwashing practices?",
+        opts: [{k:"A",t:"Delay in overall progress towards sustainability goals"},{k:"B",t:"Penalties from regulatory bodies"},{k:"C",t:"Erosion of public trust in genuinely sustainable companies"},{k:"D",t:"Reduced productivity of employees"},{k:"E",t:"Loss of sales of Strungle's products"}],
+        ans: ["A","C"],
+        exp: "Corporate greenwashing has negative impacts on wider society as it delays progress towards sustainability goals (A) and erodes public trust in sustainable companies (C). Penalties (B), reduced productivity (D) and loss of sales (E) are impacts for Strungle but not for society as a whole."
+      },
+      {
+        id: "Q23", lo: "LO 4g", selectCount: 1,
+        q: "Auberg SpA (Auberg), a manufacturing company, has stated on its website that the majority of the electricity used in its factories comes from renewable energy sources. However, it was later revealed that only 30% of the electricity is derived from renewable sources, while the remaining 70% comes from traditional fossil fuels.\n\nRequirement: Which term best describes Auberg's statement?",
+        opts: [{k:"A",t:"Greenwashing"},{k:"B",t:"Greenwishing"},{k:"C",t:"Greenhushing"},{k:"D",t:"Socialwashing"}],
+        ans: ["A"],
+        exp: "Greenwashing (A) involves providing false or misleading information about the environmental benefits of a company's practices or products. Auberg is misleading consumers by significantly overestimating the proportion of renewable energy it uses."
+      },
+      {
+        id: "Q24", lo: "LO 4g, 5a", selectCount: 3,
+        q: "Blither Ltd (Blither) has not needed to make any claims about sustainability until recently, when it started publishing detailed sustainability reports. The reports highlight Blither's significant investments in renewable energy, reduction in carbon emissions, and community engagement projects.\n\nRequirement: Which three of the following are potential reasons why Blither has started to publish sustainability reports?",
+        opts: [{k:"A",t:"To meet the demands of its stakeholders"},{k:"B",t:"To ensure it complies with regulatory requirements"},{k:"C",t:"To address accusations of greenwashing"},{k:"D",t:"To guarantee an increase in sales revenue"},{k:"E",t:"To help identify and manage its climate-related risks"}],
+        ans: ["A","B","E"],
+        exp: "Blither may gain competitive advantage resulting in increased sales (D) but that cannot be guaranteed and is not the primary purpose of sustainability reporting. Since Blither was not previously making any claims about sustainability, there is no evidence to suggest it faces accusations of greenwashing (C)."
+      },
+      {
+        id: "Q25", lo: "LO 4g", selectCount: 2,
+        q: "Beahive Ltd (Beahive) has launched a marketing campaign stating that its new product line is fully carbon-neutral and that it offsets all its carbon emissions through various environmental projects. However, independent investigations reveal that Beahive has greatly overstated its environmental credentials.\n\nRequirement: Which two of the following statements describe the consequences Beahive could face due to its marketing campaign?",
+        opts: [{k:"A",t:"Reputational damage and loss of consumer trust"},{k:"B",t:"Fines for misleading advertising"},{k:"C",t:"Increase in market share due to heightened brand awareness"},{k:"D",t:"Increase in employee loyalty"},{k:"E",t:"Decrease in future marketing costs"}],
+        ans: ["A","B"],
+        exp: "Beahive's marketing campaign is an example of greenwashing which may result in reputational damage (A) and financial penalties such as fines (B). It is unlikely to see an increase in market share (C), decrease in future marketing costs (E), or increase in employee loyalty (D)."
+      },
+      {
+        id: "Q26a", lo: "LO 4c", selectCount: 1,
+        q: "Kolmor Ltd (Kolmor) is a food processing company that sources vegetables from various local farmers. It uses significant amounts of water in its processing plant and generates a substantial amount of organic waste for disposal.\n\nRequirement (1/2): Identify whether the following is an impact for Kolmor or a dependency of Kolmor:\nA substantial amount of organic waste is generated and disposed of by Kolmor.",
+        opts: [{k:"A",t:"Impact"},{k:"B",t:"Dependency"}],
+        ans: ["A"],
+        exp: "Waste generation and disposal is an environmental impact of Kolmor's operations."
+      },
+      {
+        id: "Q26b", lo: "LO 4c", selectCount: 1,
+        q: "Kolmor Ltd (Kolmor) is a food processing company that sources vegetables from various local farmers. It uses significant amounts of water in its processing plant and generates a substantial amount of organic waste for disposal.\n\nRequirement (2/2): Identify whether the following is an impact for Kolmor or a dependency of Kolmor:\nA significant amount of water is used in Kolmor's operations.",
+        opts: [{k:"C",t:"Impact"},{k:"D",t:"Dependency"}],
+        ans: ["D"],
+        exp: "Kolmor is dependent upon a steady supply of water for its operations."
+      },
+      {
+        id: "Q27", lo: "LO 4c", selectCount: 1,
+        q: "Miline Ltd (Miline) is a technology company that produces high-end electronic devices. It operates in a niche area of the market and does not have many competitors. Miline's products cannot be disposed of easily and it operates a take-back scheme where products that are returned to Miline are recycled in-house, to enhance the responsible disposal of the products. Miline has found it difficult to recruit the highly skilled workers it requires and incurs significant expenditure in training and development of its employees.\n\nRequirement: Which of the following is a dependency for Miline?",
+        opts: [{k:"A",t:"Niche area of the market"},{k:"B",t:"Product recycling scheme"},{k:"C",t:"Highly skilled workers"},{k:"D",t:"Expenditure incurred on training"}],
+        ans: ["C"],
+        exp: "Miline relies upon highly skilled workers and is therefore dependent on the availability of these workers (C). Operating in a niche area of the market is not a dependency (A). Operating a product recycling scheme (B) and investing in training (D) are likely to be impacts of Miline rather than dependencies."
+      },
+      {
+        id: "Q28", lo: "LO 4e", selectCount: 3,
+        q: "The managing director of Forgart SA (Forgart) has proposed that the company performs a life cycle assessment (LCA) for one of its newly developed eco-friendly products. The finance director of Forgart has questioned what the benefit of performing an LCA would be.\n\nRequirement: Which three of the following are benefits of performing a life cycle assessment?",
+        opts: [{k:"A",t:"It helps a business to identify and quantify the environmental impacts of its products"},{k:"B",t:"It will guarantee that the new product is successful when it is launched"},{k:"C",t:"It can generate production cost savings"},{k:"D",t:"It can enhance the credibility of any eco-friendly claims made in respect of the product"},{k:"E",t:"It will ensure decisions are made that prioritise the profitability of products"}],
+        ans: ["A","C","D"],
+        exp: "Performing an LCA enables a business to identify and quantify environmental impacts (A), generate cost savings by identifying inefficiencies (C), and enhance credibility of environmental claims via transparency (D). It cannot guarantee product success (B) nor prioritise profitability (E)."
+      },
+      {
+        id: "Q29", lo: "LO 4e", selectCount: 1,
+        q: "Gracy Ltd (Gracy) has decided to incorporate life cycle assessment (LCA) into the product development process for its latest product.\n\nRequirement: Which of the following is a benefit Gracy can achieve by performing an LCA for the new product?",
+        opts: [{k:"A",t:"It eliminates all the environmental impacts of the new product"},{k:"B",t:"It ensures compliance with all environmental regulations"},{k:"C",t:"It helps to inform better decision making in respect of the new product"},{k:"D",t:"It ensures Gracy cannot be accused of greenwashing when it promotes the product's environmental credentials"}],
+        ans: ["C"],
+        exp: "Performing an LCA results in better informed decision making which will encourage Gracy to make choices relating to the new product that favour sustainability (C). It cannot eliminate all impacts (A), ensure compliance with all regulations (B), or guarantee Gracy will not make misleading claims (D)."
+      },
+      {
+        id: "Q30", lo: "LO 4e", selectCount: 3,
+        q: "Bulzo GmbH (Bulzo) is conducting a life cycle analysis to analyse the environmental impact of one of its products across its life cycle.\n\nRequirement: Which three of the following should Bulzo include when analysing the environmental impact of the product?",
+        opts: [{k:"A",t:"The transportation of the product to the stores in which it will be sold"},{k:"B",t:"The disposal of the product to landfill at the end of its life"},{k:"C",t:"The working conditions in the factory in which the product is assembled"},{k:"D",t:"The impact of large delivery vehicles on the local community in which Bulzo is based"},{k:"E",t:"The energy required to operate the product over its life"}],
+        ans: ["A","B","E"],
+        exp: "The working conditions in the factory (C) and the impact of large vehicles on the local community (D) are social rather than environmental impacts and are therefore not included in the analysis of the environmental impact of the product."
+      },
+      {
+        id: "Q31", lo: "LO 4e", selectCount: 2,
+        q: "Which two of the following are benefits of performing a life cycle assessment?",
+        opts: [{k:"A",t:"It will reduce the greenhouse gas emissions for products"},{k:"B",t:"It will improve customer satisfaction with products"},{k:"C",t:"It supports the circular economy"},{k:"D",t:"It helps the company performing the life cycle assessment (LCA) to improve its commitment to sustainability"},{k:"E",t:"It identifies areas where environmental concerns can be shifted from one stage of the life cycle to another"}],
+        ans: ["C","D"],
+        exp: "An LCA supports the circular economy by promoting reuse and recycling of materials (C) and helps provide information needed to make informed choices favouring sustainability (D). It cannot guarantee GHG reduction (A) or customer satisfaction (B), and its holistic approach avoids shifting environmental concerns between stages (E)."
+      },
+      {
+        id: "Q32a", lo: "LO 4e", selectCount: 1,
+        q: "Bailen SpA (Bailen) is undertaking an environmental life cycle assessment (LCA) for one of its products. Its production manager is currently focusing on the raw materials stage of the product life cycle and has identified several matters which may be relevant when performing the environmental LCA.\n\nRequirement (1/3): Identify whether the following matter is relevant or not relevant when performing the LCA:\nThe product requires metals and minerals to be mined by third-party suppliers.",
+        opts: [{k:"A",t:"Relevant"},{k:"B",t:"Not relevant"}],
+        ans: ["A"],
+        exp: "Raw material extraction leads to resource depletion and creates emissions, which should be considered in an LCA."
+      },
+      {
+        id: "Q32b", lo: "LO 4e", selectCount: 1,
+        q: "Bailen SpA (Bailen) is undertaking an environmental life cycle assessment (LCA) for one of its products. Its production manager is currently focusing on the raw materials stage of the product life cycle and has identified several matters which may be relevant when performing the environmental LCA.\n\nRequirement (2/3): Identify whether the following matter is relevant or not relevant when performing the LCA:\nA supplier of raw materials is known to expose workers to hazardous conditions in the mining process.",
+        opts: [{k:"C",t:"Relevant"},{k:"D",t:"Not relevant"}],
+        ans: ["D"],
+        exp: "This is a social matter which is relevant when considering the sustainability of the product, but not when performing an environmental LCA."
+      },
+      {
+        id: "Q32c", lo: "LO 4e", selectCount: 1,
+        q: "Bailen SpA (Bailen) is undertaking an environmental life cycle assessment (LCA) for one of its products. Its production manager is currently focusing on the raw materials stage of the product life cycle and has identified several matters which may be relevant when performing the environmental LCA.\n\nRequirement (3/3): Identify whether the following matter is relevant or not relevant when performing the LCA:\nThe raw materials are delivered to Bailen's factory using electric delivery vehicles.",
+        opts: [{k:"E",t:"Relevant"},{k:"F",t:"Not relevant"}],
+        ans: ["E"],
+        exp: "The transportation of raw materials is relevant when performing an environmental LCA. The fact that they are delivered using electric delivery vehicles will reduce their environmental impact but does not mean the transportation should not be considered."
+      },
+      {
+        id: "Q33a", lo: "LO 4c", selectCount: 1,
+        q: "The management of Idah BV is working on several new initiatives to identify and manage its environmental and social risks and opportunities.\n\nRequirement (1/3): Identify whether the following initiative relates to environmental or social risks and opportunities:\nImplementing a new manufacturing process to reduce the levels of waste generated.",
+        opts: [{k:"A",t:"Environmental"},{k:"B",t:"Social"}],
+        ans: ["A"],
+        exp: "Waste management is an environmental initiative."
+      },
+      {
+        id: "Q33b", lo: "LO 4c", selectCount: 1,
+        q: "The management of Idah BV is working on several new initiatives to identify and manage its environmental and social risks and opportunities.\n\nRequirement (2/3): Identify whether the following initiative relates to environmental or social risks and opportunities:\nImplementing a policy to cease production by 8 pm each evening to reduce noise pollution from factories.",
+        opts: [{k:"C",t:"Environmental"},{k:"D",t:"Social"}],
+        ans: ["D"],
+        exp: "Noise pollution is a social issue which has an impact on communities around the factories."
+      },
+      {
+        id: "Q33c", lo: "LO 4c", selectCount: 1,
+        q: "The management of Idah BV is working on several new initiatives to identify and manage its environmental and social risks and opportunities.\n\nRequirement (3/3): Identify whether the following initiative relates to environmental or social risks and opportunities:\nReplacing machinery over five years old with new energy efficient alternatives.",
+        opts: [{k:"E",t:"Environmental"},{k:"F",t:"Social"}],
+        ans: ["E"],
+        exp: "Energy efficiency is an environmental matter."
+      },
+      {
+        id: "Q34", lo: "LO 4f", selectCount: 1,
+        q: "A manufacturing company operates several factories, purchases electricity from an energy company and sources raw materials from various suppliers. It also distributes its products locally using its fleet of company-owned delivery trucks and globally using an international logistics partner.\n\nRequirement: Which of the following greenhouse gas (GHG) emissions would be classified as Scope 1 emissions for the company?",
+        opts: [{k:"A",t:"Emissions from the company-owned delivery trucks"},{k:"B",t:"Emissions from the electricity purchased from an energy company"},{k:"C",t:"Emissions from the production of raw materials by suppliers"},{k:"D",t:"Emissions from the global distribution of products by its logistics partner"}],
+        ans: ["A"],
+        exp: "Scope 1 emissions are direct emissions from sources that are owned or controlled by the business, such as company-owned vehicles (A). Purchased electricity (B) falls under Scope 2, while raw materials by suppliers (C) and global distribution by a logistics partner (D) are Scope 3 emissions."
+      },
+      {
+        id: "Q35", lo: "LO 4f", selectCount: 1,
+        q: "Flatcap Ltd (Flatcap) is assessing its greenhouse gas (GHG) emissions across its entire value chain. Flatcap has in-house manufacturing facilities, owns a fleet of vehicles for distribution, and supports remote working for many of its employees, who use cloud services.\n\nRequirement: Which of the following GHG emissions would be classified as a Scope 3 emission for Flatcap?",
+        opts: [{k:"A",t:"Emissions from purchased electricity used to heat Flatcap's head office building"},{k:"B",t:"Emissions from Flatcap's owned fleet of distribution vehicles"},{k:"C",t:"Emissions from the use of cloud services by Flatcap's remote employees"},{k:"D",t:"Emissions from Flatcap's manufacturing facilities"}],
+        ans: ["C"],
+        exp: "Scope 3 emissions encompass all other indirect greenhouse gas (GHG) emissions that occur in a company's value chain, including employee remote work emissions (C). Owned vehicles (B) and manufacturing facilities (D) are Scope 1, and purchased electricity at head office (A) is Scope 2."
+      },
+      {
+        id: "Q36", lo: "LO 4f", selectCount: 1,
+        q: "A tech company operates multiple office buildings and data centres. It purchases electricity from a national energy company and leases delivery vehicles to deliver its products to customers. The company also outsources the production of its hardware components to various suppliers.\n\nRequirement: Which of the following greenhouse gas (GHG) emissions would be classified as Scope 2 emissions for the tech company?",
+        opts: [{k:"A",t:"Emissions from the leased vehicles"},{k:"B",t:"Emissions from the disposal of the products by customers"},{k:"C",t:"Emissions from the production of hardware components by suppliers"},{k:"D",t:"Emissions from the electricity purchased from a national energy company"}],
+        ans: ["D"],
+        exp: "Scope 2 emissions are indirect greenhouse gas (GHG) emissions from the consumption of purchased energy and power (D). Emissions from leased vehicles (A) would be Scope 1; disposal by customers (B) and production by suppliers (C) are Scope 3 emissions."
+      },
+      {
+        id: "Q37a", lo: "LO 4f", selectCount: 1,
+        q: "Birkie Ltd (Birkie) is a food processing company which operates several plants where it processes raw agricultural produce into packaged food products.\n\nRequirement (1/3): Under which Scope would the greenhouse gas (GHG) emissions from the following activity be reported?\nBirkie purchases power from an energy provider for the use in its production plants.",
+        opts: [{k:"A",t:"Scope 1"},{k:"B",t:"Scope 2"},{k:"C",t:"Scope 3"}],
+        ans: ["B"],
+        exp: "Scope 2 emissions are the GHG emissions a business creates indirectly from the generation of purchased energy and power."
+      },
+      {
+        id: "Q37b", lo: "LO 4f", selectCount: 1,
+        q: "Birkie Ltd (Birkie) is a food processing company which operates several plants where it processes raw agricultural produce into packaged food products.\n\nRequirement (2/3): Under which Scope would the greenhouse gas (GHG) emissions from the following activity be reported?\nBirkie outsources transportation of raw materials from farms to its facilities to third-party logistics providers.",
+        opts: [{k:"D",t:"Scope 1"},{k:"E",t:"Scope 2"},{k:"F",t:"Scope 3"}],
+        ans: ["F"],
+        exp: "Scope 3 emissions are all the GHG emissions a business is indirectly responsible for across its whole value chain, including third-party logistics."
+      },
+      {
+        id: "Q37c", lo: "LO 4f", selectCount: 1,
+        q: "Birkie Ltd (Birkie) is a food processing company which operates several plants where it processes raw agricultural produce into packaged food products.\n\nRequirement (3/3): Under which Scope would the greenhouse gas (GHG) emissions from the following activity be reported?\nBirkie uses gas-fired cookers to prepare food.",
+        opts: [{k:"G",t:"Scope 1"},{k:"H",t:"Scope 2"},{k:"I",t:"Scope 3"}],
+        ans: ["G"],
+        exp: "Scope 1 emissions are direct emissions from sources that are owned or controlled by the business."
+      },
+      {
+        id: "Q38a", lo: "LO 4f", selectCount: 1,
+        q: "Hearow plc (Hearow) is a pharmaceutical company that operates several manufacturing facilities.\n\nRequirement (1/3): Identify whether the emissions from the following source would be classified as Scope 1 or Scope 2 emissions:\nHearow runs gas-fired boilers at one of its manufacturing facilities.",
+        opts: [{k:"A",t:"Scope 1"},{k:"B",t:"Scope 2"}],
+        ans: ["A"],
+        exp: "The gas-fired boilers are owned and controlled by Hearow and are therefore direct emissions, classified as Scope 1."
+      },
+      {
+        id: "Q38b", lo: "LO 4f", selectCount: 1,
+        q: "Hearow plc (Hearow) is a pharmaceutical company that operates several manufacturing facilities.\n\nRequirement (2/3): Identify whether the emissions from the following source would be classified as Scope 1 or Scope 2 emissions:\nHearow has an on-site diesel generator which is used for backup power during outages.",
+        opts: [{k:"C",t:"Scope 1"},{k:"D",t:"Scope 2"}],
+        ans: ["C"],
+        exp: "Emissions from the diesel generator are direct emissions and therefore classified as Scope 1."
+      },
+      {
+        id: "Q38c", lo: "LO 4f", selectCount: 1,
+        q: "Hearow plc (Hearow) is a pharmaceutical company that operates several manufacturing facilities.\n\nRequirement (3/3): Identify whether the emissions from the following source would be classified as Scope 1 or Scope 2 emissions:\nHearow uses electricity purchased from an energy supplier in its head office.",
+        opts: [{k:"E",t:"Scope 1"},{k:"F",t:"Scope 2"}],
+        ans: ["F"],
+        exp: "Emissions from electricity purchased from a supplier are indirect emissions and fall under Scope 2."
+      },
+      {
+        id: "Q39", lo: "LO 4f", selectCount: 1,
+        q: "Meeza Ltd (Meeza) is a manufacturing company aiming to reduce its overall carbon footprint. The company has identified that a significant portion of its greenhouse gas (GHG) emissions come from its supply chain activities. To address this, Meeza is considering implementing measures to reduce its Scope 3 emissions.\n\nRequirement: Which of the following actions would not contribute to reducing Meeza's Scope 3 emissions?",
+        opts: [{k:"A",t:"Installing energy-efficient lighting in Meeza's offices to reduce the use of purchased electricity"},{k:"B",t:"Partnering with suppliers who use renewable energy sources"},{k:"C",t:"Changing to a logistics company that utilises software to ensure efficient delivery routes"},{k:"D",t:"Encouraging customers to dispose of its products responsibly"}],
+        ans: ["A"],
+        exp: "Installing energy efficient lighting would reduce Scope 2 emissions, as it reduces Meeza's consumption of purchased electricity, but it would not impact Scope 3 emissions which relate to the indirect emissions from Meeza's value chain activities, including suppliers, customers and transportation."
+      },
+      {
+        id: "Q40a", lo: "LO 4c", selectCount: 1,
+        q: "The directors of Calcette Ltd (Calcette), a manufacturing company, are assessing whether important aspects of its production process represent impacts of the company or are dependencies of the company.\n\nRequirement (1/3): Identify whether the following is an impact, a dependency or both:\nCalcette relies upon a significant amount of freshwater in its production process, which can occasionally affect the water supply to the local community.",
+        opts: [{k:"A",t:"Impact only"},{k:"B",t:"Dependency only"},{k:"C",t:"Both impact and dependency"}],
+        ans: ["C"],
+        exp: "Calcette is dependent on the availability of water and its high use impacts on the local community."
+      },
+      {
+        id: "Q40b", lo: "LO 4c", selectCount: 1,
+        q: "The directors of Calcette Ltd (Calcette), a manufacturing company, are assessing whether important aspects of its production process represent impacts of the company or are dependencies of the company.\n\nRequirement (2/3): Identify whether the following is an impact, a dependency or both:\nCalcette relies heavily on a rare mineral that is essential for its manufacturing.",
+        opts: [{k:"D",t:"Impact only"},{k:"E",t:"Dependency only"},{k:"F",t:"Impact and dependency"}],
+        ans: ["E"],
+        exp: "Its reliance on a rare mineral demonstrates a dependency on natural resources."
+      },
+      {
+        id: "Q40c", lo: "LO 4c", selectCount: 1,
+        q: "The directors of Calcette Ltd (Calcette), a manufacturing company, are assessing whether important aspects of its production process represent impacts of the company or are dependencies of the company.\n\nRequirement (3/3): Identify whether the following is an impact, a dependency or both:\nCalcette relies on a highly skilled workforce for its specialist production process and invests in training programmes for its employees to maintain their skill levels.",
+        opts: [{k:"G",t:"Impact only"},{k:"H",t:"Dependency only"},{k:"I",t:"Impact and dependency"}],
+        ans: ["H"],
+        exp: "Calcette depends upon skilled human capital for success."
+      },
+      {
+        id: "Q41", lo: "LO 4c", selectCount: 1,
+        q: "Kiethly Ltd (Kiethly) is an agricultural business which relies heavily on water resources for its farming activities. In recent years, Kiethly has faced prolonged drought conditions in the region, resulting in higher water costs and reduced crop yields. As a result, it has invested in water-saving technologies and diversified into drought-resistant crops. These efforts have attracted the attention of investors who are keen on businesses with strong sustainability strategies.\n\nRequirement: What is the effect on Kiethly's enterprise value of its dependency on water resources?",
+        opts: [{k:"A",t:"The dependency on water resources will always decrease enterprise value due to the inherent risks of drought"},{k:"B",t:"The dependency on water resources has no impact on enterprise value as long as Kiethly maintains its usual operations"},{k:"C",t:"The dependency on water resources, if managed well, can enhance enterprise value by promoting innovation and attracting investors"},{k:"D",t:"Kiethly's enterprise value is unaffected by sustainability matters"}],
+        ans: ["C"],
+        exp: "Managing dependencies well can lead to innovations, such as investing in water-saving technologies and diversifying into drought-resistant crops, that attract investors who value sustainability. The innovation ultimately enhances enterprise value despite the inherent risks associated with dependency on natural resources like water."
+      },
+      {
+        id: "Q42", lo: "LO 4c", selectCount: 1,
+        q: "Seecloth plc (Seecloth) is a retail surfwear company with multiple stores located in coastal locations. Seecloth is aware of the impact of rising sea levels, which threaten to flood several of its stores. In addition to this, Seecloth has experienced a noticeable shift in consumer preferences towards sustainable and eco-friendly clothing, putting pressure on the company to adapt its product lines and practices.\n\nRequirement: What types of climate-related risks is Seecloth facing?",
+        opts: [{k:"A",t:"Acute physical risks only"},{k:"B",t:"Chronic physical risks only"},{k:"C",t:"Acute physical risks and transition risks"},{k:"D",t:"Chronic physical risks and transition risks"}],
+        ans: ["D"],
+        exp: "Seecloth is facing chronic physical risks due to the rising sea levels which represent longer-term shifts in climatic patterns that could cause flooding in its stores. Additionally, the shift in consumer preferences towards sustainable products represents a transition risk (a market risk), as it necessitates changes in Seecloth's product lines and practices to meet new consumer demands."
+      },
+      {
+        id: "Q43", lo: "LO 4c", selectCount: 1,
+        q: "FarmVeg Inc (FarmVeg) is an agricultural company that grows various fruits and vegetables. The local government where FarmVeg operates has stated that it plans to introduce new requirements for agricultural companies to reduce their carbon emissions and adopt sustainable farming techniques. FarmVeg intends to comply with the new requirements and will need to make a significant investment in new machinery to do so.\n\nRequirement: Which type of climate-related transition risk is FarmVeg facing?",
+        opts: [{k:"A",t:"Policy risk"},{k:"B",t:"Legal risk"},{k:"C",t:"Technological risk"},{k:"D",t:"Market risk"}],
+        ans: ["A"],
+        exp: "FarmVeg is facing a policy transition risk due to the new government requirements for reductions in carbon emissions and sustainable farming practices (A). Legal risks (B) arise from fines/challenges for non-compliance. Technological risks (C) arise from obsolescence or failure to innovate. Market risk (D) is falling demand due to shifting consumer preferences."
+      },
+      {
+        id: "Q44", lo: "LO 4c", selectCount: 1,
+        q: "Coasted SA (Coasted) is a manufacturing company. Coasted has identified the following short-term risks to the company:\n(1) The company operates from a factory in a location that has become more prone to forest fires due to drier weather conditions, which has caused a disruption to operations in the past.\n(2) One of Coasted's main competitors has developed new technology which allows it to reduce the level of packaging for its products.\n(3) A government report highlights an expected increase in frequency of flooding in the area where Coasted is located.\n\nRequirement: Which of the risks identified are physical climate-related risks for Coasted?",
+        opts: [{k:"A",t:"1 and 2 only"},{k:"B",t:"1 and 3 only"},{k:"C",t:"2 and 3 only"},{k:"D",t:"1, 2 and 3"}],
+        ans: ["B"],
+        exp: "Operating in an area prone to forest fires is an acute physical risk and an expected increase in frequency of severe weather events is a chronic physical risk. A competitor developing new technology to package products more efficiently is a transition risk rather than a physical risk."
+      },
+      {
+        id: "Q45a", lo: "LO 4c", selectCount: 1,
+        q: "Aggricotte SpA (Agricotte), a large agricultural company, has identified potential climate-related physical risks to its operations due to climate change.\n\nRequirement (1/3): Identify whether the following risk is an acute physical risk or a chronic physical risk:\nSevere flooding from a major storm causing significant damage to crops and farm infrastructure.",
+        opts: [{k:"A",t:"Acute"},{k:"B",t:"Chronic"}],
+        ans: ["A"],
+        exp: "Acute physical risks are risks resulting from climate change that are event-driven, such as sudden severe flooding, storms or heatwaves."
+      },
+      {
+        id: "Q45b", lo: "LO 4c", selectCount: 1,
+        q: "Aggricotte SpA (Agricotte), a large agricultural company, has identified potential climate-related physical risks to its operations due to climate change.\n\nRequirement (2/3): Identify whether the following risk is an acute physical risk or a chronic physical risk:\nIncreases in average temperatures adversely affecting crop yields.",
+        opts: [{k:"C",t:"Acute"},{k:"D",t:"Chronic"}],
+        ans: ["D"],
+        exp: "Chronic physical risks arise from longer-term shifts in climatic patterns, such as changes in precipitation or temperature."
+      },
+      {
+        id: "Q45c", lo: "LO 4c", selectCount: 1,
+        q: "Aggricotte SpA (Agricotte), a large agricultural company, has identified potential climate-related physical risks to its operations due to climate change.\n\nRequirement (3/3): Identify whether the following risk is an acute physical risk or a chronic physical risk:\nIncrease in frequency and intensity of heatwaves resulting in the wastage of a high number of newly planted crops.",
+        opts: [{k:"E",t:"Acute"},{k:"F",t:"Chronic"}],
+        ans: ["E"],
+        exp: "Acute physical risks are event-driven, such as sudden severe flooding or a heatwave."
+      },
+      {
+        id: "Q46", lo: "LO 4c", selectCount: 1,
+        q: "Feedwish plc (Feedwish), a food and beverage company, is considering whether it has any sustainability-related opportunities. The directors have identified the following upcoming matters that may be relevant:\n(1) Feedwish already complies with regulatory changes which will take effect next year.\n(2) Feedwish has new product lines in development that will be packaged in 100% compostable packaging.\n(3) Feedwish will need to rely on a temporary workforce to fulfil its orders.\n\nRequirement: Which of the matters create sustainability-related opportunities for Feedwish?",
+        opts: [{k:"A",t:"1 and 2 only"},{k:"B",t:"1 and 3 only"},{k:"C",t:"2 and 3 only"},{k:"D",t:"1, 2 and 3"}],
+        ans: ["A"],
+        exp: "Complying with regulatory changes before they become mandatory can represent an opportunity as competitors may incur costs to comply. Developing 100% compostable packaging satisfies consumer trends. Relying on a temporary workforce does not create an opportunity."
+      },
+      {
+        id: "Q47", lo: "LO 4c", selectCount: 2,
+        q: "Cleans GmbH (Cleans) is a mid-sized manufacturing company that has built its reputation by specialising in producing eco-friendly household cleaning products. Cleans is exploring sustainability-related opportunities that could enhance its business.\n\nRequirement: Which two of the following are sustainability-related opportunities for Cleans?",
+        opts: [{k:"A",t:"Increasing the use of single-use plastic packaging to reduce production costs"},{k:"B",t:"Investing in new lower energy technologies which improve production efficiency and reduce waste"},{k:"C",t:"Decreasing the number of products offered in response to an increase in competition"},{k:"D",t:"Improving workforce development by offering training programmes to enhance employee skills"},{k:"E",t:"Meeting minimum regulatory requirements in relation to health and safety"}],
+        ans: ["B","D"],
+        exp: "Investing in new technologies to improve production efficiency and reduce waste (B) leads to lower costs and more profits. Enhancing workforce skills through training (D) contributes to social sustainability. Single-use plastic (A) harms reputation, decreasing products (C) doesn't directly impact sustainability, and meeting minimum H&S requirements (E) is a necessity, not an opportunity."
+      },
+      {
+        id: "Q48", lo: "LO 4c", selectCount: 1,
+        q: "DryUp Ltd (DryUp) is a textile manufacturing company that relies heavily on the availability of cotton to maintain its production levels. Recently, the region where DryUp's cotton is grown and farmed has been experiencing temporary but severe droughts which has reduced the availability of cotton and increased operational costs for DryUp. Additionally, there is growing public concern and regulatory pressure for businesses to manage soil degradation at cotton farms.\n\nRequirement: How is the reduced availability of cotton likely to impact DryUp's enterprise value?",
+        opts: [{k:"A",t:"The reduced availability of cotton will have no impact on enterprise value as it is a temporary issue"},{k:"B",t:"The reduced availability of cotton will increase enterprise value by pushing DryUp to innovate and find more sustainable farming methods"},{k:"C",t:"The reduced availability of cotton will decrease enterprise value by increasing operational costs and exposing DryUp to regulatory risks"},{k:"D",t:"Public concern about soil degradation at cotton farms will increase enterprise value as it boosts DryUp's visibility and market presence"}],
+        ans: ["C"],
+        exp: "The reduced availability of cotton imposes higher operational costs due to the need for more efficient water management practices and possible interruptions in production. Additionally, regulatory pressure regarding soil degradation can lead to further expenditures on compliance and infrastructure updates. Both factors negatively affect DryUp's enterprise value."
+      },
+      {
+        id: "Q49", lo: "LO 4c", selectCount: 2,
+        q: "Drinkex plc (Drinkex), a beverage company, prides itself on being the first in the industry to transition to eco-friendly packaging for its products. It uses seaweed-based biodegradable packaging sourced from a specific supplier. Demand for sustainable products in the beverage industry is increasing. Drinkex requires a high level of freshwater for its operations. Drinkex employs people from the local area which is experiencing a high level of unemployment. Drinkex has implemented an employability training scheme to upskill local workers, aiming to support the local economy.\n\nRequirement: Which two of the following are dependencies of Drinkex?",
+        opts: [{k:"A",t:"Drinkex relies on the availability of seaweed-based biodegradable packaging from a single supplier"},{k:"B",t:"Drinkex's reputation for being the first to transition to eco-friendly packaging"},{k:"C",t:"Drinkex's employability training scheme"},{k:"D",t:"Drinkex requires a high level of freshwater for its operations"},{k:"E",t:"The high level of unemployment in the local area"}],
+        ans: ["A","D"],
+        exp: "Reliance on a single supplier for seaweed-based biodegradable packaging (A) and a need for a high level of freshwater (D) are both dependencies of Drinkex. Employability training (C) is an impact. High unemployment (E) is a social factor, not a dependency, and reputation (B) is not a dependency."
+      },
+      {
+        id: "Q50", lo: "LO 4c", selectCount: 2,
+        q: "The directors of Martet GmbH (Martet) are concerned about the social impact of the company's operations. Martet operates in a country which has an unstable government resulting in changing regulatory requirements relating to businesses. Martet requires a skilled workforce for its operations and invests heavily in offering above-market wage rates and development opportunities to its employees. Martet supports community groups in the area in which it operates by regularly sponsoring events.\n\nRequirement: Which two of the following are impacts of Martet's operations?",
+        opts: [{k:"A",t:"Martet operates in a country with an unstable government"},{k:"B",t:"Martet is subject to changing regulatory requirements relating to businesses"},{k:"C",t:"Martet requires a skilled workforce for its operations"},{k:"D",t:"Martet offers above-market average wage rates and development opportunities to its employees"},{k:"E",t:"Martet supports local community groups by sponsoring events"}],
+        ans: ["D","E"],
+        exp: "Martet positively impacts on its employees by offering above-market average wage rates and development opportunities (D) and positively impacts on the local community by sponsoring events (E). Operating in a country with an unstable government (A) and changing regulations (B) are risks, and requiring a skilled workforce (C) is a dependency."
+      },
+      {
+        id: "Q51", lo: "LO 4c", selectCount: 1,
+        q: "Fizzways SpA (Fizzways) is a specialist medical supplies manufacturer and retailer that generates a high level of waste in its manufacturing process. As plastic usage has become a major environmental concern, Fizzways is developing biodegradable packaging for some of its products which is revolutionary in the market and is expected to be well received by consumers who have expressed a preference for eco-friendly products.\n\nRequirement: Which of the following correctly identifies an impact and an opportunity for Fizzways?",
+        opts: [{k:"A",t:"The impact is the level of waste that will be generated, and the opportunity is the development of biodegradable packaging"},{k:"B",t:"The impact is satisfying the consumer preference for eco-friendly products, and the opportunity is investing in biodegradable packaging"},{k:"C",t:"The impact is the reduction in plastic usage, and the opportunity is the level of waste that will be generated"},{k:"D",t:"The impact is the investment required to develop the biodegradable packaging, and the opportunity is the reduction in plastic usage"}],
+        ans: ["A"],
+        exp: "An impact refers to how Fizzways' operations affect ESG matters—generating a high level of waste is a negative environmental impact. An opportunity is the potential positive effects sustainability factors can have on operations, financial performance, and reputation—developing revolutionary biodegradable packaging represents an opportunity."
+      },
+      {
+        id: "Q52a", lo: "LO 4f", selectCount: 1,
+        q: "Environmental, social and governance (ESG) ratings measure a business's performance in each of the lenses.\n\nRequirement (1/3): Identify whether the following statement about ESG ratings is true or false:\nESG ratings are used for external reporting purposes only and do not inform internal decision making.",
+        opts: [{k:"A",t:"True"},{k:"B",t:"False"}],
+        ans: ["B"],
+        exp: "ESG ratings can be used internally by businesses to benchmark their performance and identify areas for improvement."
+      },
+      {
+        id: "Q52b", lo: "LO 4f", selectCount: 1,
+        q: "Environmental, social and governance (ESG) ratings measure a business's performance in each of the lenses.\n\nRequirement (2/3): Identify whether the following statement about ESG ratings is true or false:\nA business with a low ESG rating is likely to be a more attractive investment option than a business with a high ESG rating.",
+        opts: [{k:"C",t:"True"},{k:"D",t:"False"}],
+        ans: ["D"],
+        exp: "A business with a high ESG rating is likely to be a more attractive investment option."
+      },
+      {
+        id: "Q52c", lo: "LO 4f", selectCount: 1,
+        q: "Environmental, social and governance (ESG) ratings measure a business's performance in each of the lenses.\n\nRequirement (3/3): Identify whether the following statement about ESG ratings is true or false:\nESG ratings for different businesses are easy to compare as they are all provided by a single agency.",
+        opts: [{k:"E",t:"True"},{k:"F",t:"False"}],
+        ans: ["F"],
+        exp: "There is no set standard for measuring or assessing ESG information, which makes it difficult to interpret how ratings are determined and to compare ratings provided by different agencies."
+      },
+      {
+        id: "Q53", lo: "LO 4f", selectCount: 1,
+        q: "Hauny GmbH (Hauny) is a fast-fashion clothing retailer. It has attracted negative media recently due to the following factors:\n(1) It sends a lot of unsold clothing to landfill.\n(2) Some of its suppliers use child labour in their manufacturing processes.\n(3) It removed staff training programmes for its employees to save costs.\n\nRequirement: Which factors are relevant to the social component of ESG?",
+        opts: [{k:"A",t:"1 and 2 only"},{k:"B",t:"1 and 3 only"},{k:"C",t:"2 and 3 only"},{k:"D",t:"1, 2 and 3"}],
+        ans: ["C"],
+        exp: "The use of child labour (2) within the supply chain and the removal of staff training programmes (3) are both social matters. Putting unsold clothing into landfill (1) is an environmental issue."
+      },
+      {
+        id: "Q54", lo: "LO 4a", selectCount: 3,
+        q: "Woodster Ltd (Woodster) is working towards making more sustainable decisions in support of its overall sustainability strategy.\n\nRequirement: Which three of the following decisions would improve Woodster's sustainability?",
+        opts: [{k:"A",t:"Reducing spending on staff development and using the money for energy-efficient lighting"},{k:"B",t:"Reducing the packaging for its products by 30%"},{k:"C",t:"Offering an extended warranty scheme for its products at no extra charge"},{k:"D",t:"Removing the use of logistics software which designed efficient delivery routes to allow delivery staff more free choice about how to make deliveries"},{k:"E",t:"Adopting a zero-waste manufacturing process"}],
+        ans: ["B","C","E"],
+        exp: "Reducing spending on staff development (A) has a negative impact on sustainability, as does removing the use of logistics software designed to improve efficiency (D)."
+      },
+      {
+        id: "Q55", lo: "LO 4b", selectCount: 1,
+        q: "Crispo Ltd's (Crispo) directors are implementing its sustainability strategy but are faced with barriers to progress.\n\nRequirement: Which of the following is an example of stakeholder pressure being a barrier to progress?",
+        opts: [{k:"A",t:"Procurement staff are expected to prioritise sustainability credentials of suppliers over cost"},{k:"B",t:"Crispo is a private company owned by its directors"},{k:"C",t:"Employees involved in day-to-day operations are under pressure to prioritise fulfilling orders without considering sustainable decisions"},{k:"D",t:"Crispo's competitors are also prioritising sustainability"}],
+        ans: ["C"],
+        exp: "Employees who are under pressure to fulfil orders are less likely to work towards sustainability goals (C). Prioritising sustainability credentials over cost (A) helps sustainability; being a private company (B) simply describes ownership; competitors prioritising sustainability (D) encourages rather than hinders progress."
+      },
+      {
+        id: "Q56", lo: "LO 4c", selectCount: 2,
+        q: "KyMi Ltd (KyMi), a manufacturing company, is undertaking a number of new initiatives which its directors hope will create climate-related opportunities for the business.\n\nRequirement: Which two of the following may create a climate-related opportunity for KyMi?",
+        opts: [{k:"A",t:"Investing in the development of a small windfarm to provide power for its manufacturing site"},{k:"B",t:"Investing in training and development to upskill its employees"},{k:"C",t:"Changing to ensure all suppliers have fair trade accreditation which has been identified as important to customers"},{k:"D",t:"Incurring expenditure to create flood defences to protect its manufacturing site from the effects of flooding"},{k:"E",t:"Developing a new product to satisfy a gap in the market"}],
+        ans: ["A","D"],
+        exp: "Climate-related opportunities arise from initiatives and new technologies designed to mitigate the effects of climate change. Investing in a windfarm (A) and creating flood defences (D) meet this description. Training (B), fair trade suppliers (C), and developing a new product for a market gap (E) are opportunities, but not climate-related."
+      },
+      {
+        id: "Q57", lo: "LO 4c", selectCount: 1,
+        q: "Feyen BV (Feyen) is a manufacturer of sports equipment. It has identified the following risks to the business in the coming year:\n(1) It operates in a country in which a change in government is expected in the coming year which will lead to a significant change in environmental regulations.\n(2) Feyen is unlikely to be compliant if stricter environmental regulations are introduced.\n(3) It has a storage warehouse which is situated in an area which has become increasingly prone to flooding due to high levels of rainfall.\n\nRequirement: Which of the risks is/are classified as transition risks for Feyen?",
+        opts: [{k:"A",t:"2 only"},{k:"B",t:"1 and 2 only"},{k:"C",t:"3 only"},{k:"D",t:"1, 2 and 3"}],
+        ans: ["B"],
+        exp: "Transition risks arise from efforts to transition to a lower-carbon economy. Changing government regulations (1) are policy transition risks. Potential fines from non-compliance with regulations (2) are legal transition risks. Having a storage warehouse in a flood-prone area (3) is a physical risk."
+      },
+      {
+        id: "Q58", lo: "LO 4f", selectCount: 2,
+        q: "Environmental, social and governance (ESG) provides a framework which allows stakeholders, including investors, to assess how a business has managed its risks and opportunities relating to ESG matters.\n\nRequirement: Which two of the following factors are relevant to the social lens of ESG?",
+        opts: [{k:"A",t:"Waste management"},{k:"B",t:"Employee diversity"},{k:"C",t:"Consumer protection"},{k:"D",t:"Bribery and corruption policies"},{k:"E",t:"Executive pay"}],
+        ans: ["B","C"],
+        exp: "The social lens of ESG assesses issues relating to the rights, wellbeing and interests of people and communities. Employee diversity (B) and consumer protection (C) are relevant to the social lens. Waste management (A) is environmental; bribery and corruption (D) and executive pay (E) are governance."
+      },
+      {
+        id: "Q59a", lo: "LO 4f", selectCount: 1,
+        q: "Environmental, social and governance (ESG) are the three areas of sustainability that are relevant to corporate organisations as opposed to those that affect the whole of society.\n\nRequirement (1/3): Identify whether the following is relevant to the environmental, social or governance aspect of ESG:\nHabitat loss due to the increasing size of urban areas.",
+        opts: [{k:"A",t:"Environmental"},{k:"B",t:"Social"},{k:"C",t:"Governance"}],
+        ans: ["A"],
+        exp: "The environmental aspect focuses on issues relating to the quality and functioning of the natural environment and natural systems. This includes habitat (biodiversity) loss."
+      },
+      {
+        id: "Q59b", lo: "LO 4f", selectCount: 1,
+        q: "Environmental, social and governance (ESG) are the three areas of sustainability that are relevant to corporate organisations as opposed to those that affect the whole of society.\n\nRequirement (2/3): Identify whether the following is relevant to the environmental, social or governance aspect of ESG:\nIntroduction of policies related to risk management.",
+        opts: [{k:"D",t:"Environmental"},{k:"E",t:"Social"},{k:"F",t:"Governance"}],
+        ans: ["F"],
+        exp: "The governance component considers issues relating to overseeing the control and direction of a business. This includes its risk management policies."
+      },
+      {
+        id: "Q59c", lo: "LO 4f", selectCount: 1,
+        q: "Environmental, social and governance (ESG) are the three areas of sustainability that are relevant to corporate organisations as opposed to those that affect the whole of society.\n\nRequirement (3/3): Identify whether the following is relevant to the environmental, social or governance aspect of ESG:\nThe diversity of the board of a business must represent the community in which the business operates.",
+        opts: [{k:"G",t:"Environmental"},{k:"H",t:"Social"},{k:"I",t:"Governance"}],
+        ans: ["I"],
+        exp: "The structure, size and diversity of the board of a business is relevant to the governance component of ESG."
+      }
+    ];
+
+    // =========================================================================
+    // 2. 22 CORE FLASHCARDS — CHAPTER 4 (VIETNAMESE + ENGLISH KEY TERMS)
+    // =========================================================================
+    const FLASHCARDS = [
+      {
+        id: "FC1", tag: "LO 4d",
+        front: "Sustainability-linked bond (SLB) & Step-up / Step-down",
+        back: "Dùng cho mục đích chung (general purpose), lãi suất gắn với KPI bền vững.\n\n• Không đạt mục tiêu → Interest rate step-up (tăng lãi suất).\n• Vượt mục tiêu → Interest rate step-down (giảm lãi suất)."
+      },
+      {
+        id: "FC2", tag: "LO 4d",
+        front: "Use-of-proceeds finance (Green / Blue / Social Bonds)",
+        back: "Bắt buộc dùng tiền cho dự án cụ thể:\n• Green bond: Môi trường (năng lượng mặt trời, xe tiết kiệm năng lượng).\n• Blue bond: Đại dương & hệ sinh thái ven biển, xử lý nước thải ra biển.\n• Social bond: Xã hội (tạo việc làm, giáo dục)."
+      },
+      {
+        id: "FC3", tag: "LO 4d",
+        front: "Sustainability-linked loan (SLL) vs Green loan",
+        back: "• SLL: Linh hoạt cho mục đích chung của doanh nghiệp (general corporate purposes) và gắn lãi suất với mục tiêu bền vững.\n• Green loan: Thuộc nhóm 'use of proceeds' — chỉ được dùng cho dự án xanh cụ thể, kém linh hoạt hơn."
+      },
+      {
+        id: "FC4", tag: "LO 4a",
+        front: "Porter's Value Chain & Sustainability",
+        back: "• Inbound logistics: Nhận và lưu kho hàng/nguyên liệu từ nhà cung cấp.\n• Operations: Chế biến, sản xuất, xử lý đơn hàng.\n• Outbound logistics: Giao hàng đến khách hàng (vd: phần mềm tối ưu tuyến đường xe tải giảm nhiên liệu).\n• Marketing & Sales: Quảng bá và bán sản phẩm."
+      },
+      {
+        id: "FC5", tag: "LO 4a",
+        front: "Carbon offsetting (Bù đắp carbon)",
+        back: "• KHÔNG giảm phát thải tại nguồn; chỉ bù đắp bằng cách tài trợ dự án nơi khác (trồng cây, phục hồi hệ sinh thái).\n• Dễ bị cáo buộc greenwashing nếu không thay đổi vận hành thực chất.\n• Không thúc đẩy thay đổi hành vi dài hạn và không đủ tín chỉ cho tất cả doanh nghiệp."
+      },
+      {
+        id: "FC6", tag: "LO 4a",
+        front: "Theo dõi tiến độ bền vững (Monitoring progress)",
+        back: "3 công cụ hiệu quả nhất:\n1. KPIs đo lường tác động môi trường & xã hội.\n2. Phần mềm Data analytics thu thập & phân tích dữ liệu thời gian thực.\n3. Báo cáo cho các bên liên quan theo chuẩn mực (như GRI Standards).\n\n(Khảo sát nhân viên hay họp cổ đông thường niên không đủ chi tiết/thường xuyên)."
+      },
+      {
+        id: "FC7", tag: "LO 4b",
+        front: "Barriers to sustainability (Rào cản chính)",
+        back: "• Thiếu giải pháp thay thế khả thi (như bao bì nhựa).\n• Hạn chế tài chính/vốn (lệ thuộc thấu chi, khó vay).\n• Thiếu dữ liệu đo lường & khó xác minh tác động vật liệu.\n• Kế hoạch hay thay đổi, áp lực khách hàng/nhân viên ưu tiên giá rẻ & giao đơn.\n• Quy định bất ổn, ban lãnh đạo thiếu kinh nghiệm quản trị thay đổi."
+      },
+      {
+        id: "FC8", tag: "LO 4g",
+        front: "Greenwashing vs Socialwashing",
+        back: "• Greenwashing: Gây hiểu lầm về mức độ thân thiện môi trường (nay mở rộng gồm cả yếu tố bền vững xã hội).\n• Socialwashing: Phóng đại/gây hiểu lầm về trách nhiệm xã hội (vd: thổi phồng làm từ thiện, tuyên bố lao động công bằng nhưng NCC dùng lao động trẻ em)."
+      },
+      {
+        id: "FC9", tag: "LO 4g",
+        front: "Greenwishing vs Greenhushing vs Greenlighting",
+        back: "• Greenwishing: Tuyên bố mục tiêu tham vọng nhưng không có kế hoạch/ngân sách/đo lường.\n• Greenhushing: Cố tình giấu/không công bố nỗ lực bền vững thật sự để tránh soi xét (khó xây dựng thương hiệu xanh).\n• Greenlighting: Khoe 1 điểm sáng nhỏ để đánh lạc hướng khỏi yếu kém khác."
+      },
+      {
+        id: "FC10", tag: "LO 4g",
+        front: "Hậu quả của Greenwashing (Doanh nghiệp vs Xã hội)",
+        back: "• Doanh nghiệp: Mất niềm tin nhà đầu tư/khách hàng, bị phạt pháp lý/quảng cáo sai sự thật, nhân viên mất động lực, tốn thêm ngân sách marketing phục hồi uy tín.\n• Xã hội (Societal impacts): Làm chậm tiến độ mục tiêu bền vững chung & xói mòn niềm tin công chúng vào các công ty bền vững thật sự."
+      },
+      {
+        id: "FC11", tag: "LO 4c",
+        front: "Impact (Tác động) vs Dependency (Sự phụ thuộc)",
+        back: "• Impact: Cách hoạt động DN tác động ra môi trường/xã hội (rác thải, tài trợ cộng đồng, trả lương cao, đào tạo).\n• Dependency: Tài nguyên/nguồn lực DN dựa vào để vận hành (nước ngọt, khoáng sản hiếm, lao động kỹ năng cao, 1 NCC độc quyền).\n• Có thể vừa là Impact vừa là Dependency (vd: dùng nhiều nước ảnh hưởng nguồn nước cộng đồng)."
+      },
+      {
+        id: "FC12", tag: "LO 4c",
+        front: "Physical risks: Acute vs Chronic",
+        back: "• Acute (Cấp tính): Sự kiện đột ngột, cực đoan (event-driven) — bão lũ lớn, cháy rừng, sóng nhiệt (heatwaves).\n• Chronic (Mãn tính): Biến đổi khí hậu dài hạn — nước biển dâng (rising sea levels), nhiệt độ trung bình tăng, thay đổi lượng mưa."
+      },
+      {
+        id: "FC13", tag: "LO 4c",
+        front: "Transition risks (Rủi ro chuyển đổi sang kinh tế carbon thấp)",
+        back: "4 loại chính:\n1. Policy risk: Chính sách/quy định mới sắp ban hành đòi hỏi đầu tư tuân thủ.\n2. Legal risk: Phạt/kiện tụng do không tuân thủ luật môi trường.\n3. Technological risk: Công nghệ lỗi thời so với đối thủ.\n4. Market risk: Thị hiếu khách hàng đổi sang sản phẩm xanh."
+      },
+      {
+        id: "FC14", tag: "LO 4c",
+        front: "Climate-related opportunities vs Sustainability opportunities",
+        back: "• Climate-related opportunities: Phải gắn trực tiếp với giảm thiểu/thích ứng biến đổi khí hậu (xây điện gió, xây đê chống lũ).\n• Đào tạo nhân viên, dùng NCC Fair trade, hay phát triển sản phẩm lấp khoảng trống thị trường là cơ hội bền vững/kinh doanh nhưng KHÔNG phải climate-related."
+      },
+      {
+        id: "FC15", tag: "LO 4c",
+        front: "Enterprise Value & Sustainability",
+        back: "• Quản trị tốt sự phụ thuộc (đổi mới công nghệ tiết kiệm nước, cây trồng chịu hạn) → tăng Enterprise Value & thu hút nhà đầu tư.\n• Không quản trị tốt (thiếu bông do hạn hán, chi phí vận hành tăng, rủi ro pháp lý suy thoái đất) → giảm Enterprise Value."
+      },
+      {
+        id: "FC16", tag: "LO 4e",
+        front: "Life Cycle Assessment (LCA) — Lợi ích & Bẫy thi",
+        back: "• Lợi ích: Định lượng tác động môi trường toàn vòng đời, tiết kiệm chi phí sản xuất, tăng độ tin cậy tuyên bố xanh, hỗ trợ kinh tế tuần hoàn & ra quyết định tốt hơn.\n• ⚠️ Bẫy: LCA KHÔNG đảm bảo sản phẩm thành công, KHÔNG triệt tiêu 100% tác động, KHÔNG đảm bảo tuân thủ mọi luật hay miễn nhiễm greenwashing."
+      },
+      {
+        id: "FC17", tag: "LO 4e",
+        front: "Environmental LCA — Phạm vi tính toán",
+        back: "• CHỈ tính tác động MÔI TRƯỜNG: khai thác nguyên liệu, vận chuyển (kể cả xe điện), năng lượng sử dụng sản phẩm, thải bỏ ra bãi rác.\n• KHÔNG tính yếu tố xã hội (điều kiện làm việc trong nhà máy/hầm mỏ, tác động xe tải lớn tới cộng đồng)."
+      },
+      {
+        id: "FC18", tag: "LO 4f",
+        front: "GHG Scope 1 (Phát thải trực tiếp)",
+        back: "Nguồn do doanh nghiệp SỞ HỮU hoặc KIỂM SOÁT trực tiếp:\n• Xe tải giao hàng sở hữu hoặc thuê (owned/leased vehicles).\n• Nhà máy sản xuất nội bộ.\n• Lò hơi đốt gas (gas-fired boilers), bếp gas.\n• Máy phát điện diesel dự phòng tại chỗ (on-site diesel generator)."
+      },
+      {
+        id: "FC19", tag: "LO 4f",
+        front: "GHG Scope 2 (Phát thải gián tiếp từ năng lượng mua vào)",
+        back: "Phát thải gián tiếp từ việc sản xuất điện / năng lượng mà doanh nghiệp MUA từ nhà cung cấp bên ngoài (purchased electricity/power cho văn phòng, nhà máy, sưởi ấm, đèn chiếu sáng)."
+      },
+      {
+        id: "FC20", tag: "LO 4f",
+        front: "GHG Scope 3 (Phát thải gián tiếp toàn chuỗi giá trị)",
+        back: "Mọi phát thải gián tiếp khác ngoài Scope 2:\n• Sản xuất nguyên liệu / linh kiện của nhà cung cấp.\n• Vận tải / logistics thuê bên thứ 3.\n• Nhân viên làm việc từ xa & dùng dịch vụ đám mây (cloud services).\n• Khách hàng sử dụng & thải bỏ sản phẩm."
+      },
+      {
+        id: "FC21", tag: "LO 4f",
+        front: "ESG Lenses — Mẹo phân biệt bẫy S vs G",
+        back: "• Environmental (E): Rác thải, quần áo đưa ra bãi rác, mất môi trường sống/đa dạng sinh học.\n• Social (S): Đa dạng nhân viên (employee diversity), bảo vệ người tiêu dùng, lao động trẻ em, đào tạo nhân viên, ô nhiễm tiếng ồn cộng đồng.\n• Governance (G): Chính sách quản trị rủi ro, chống hối lộ/tham nhũng, lương điều hành, cơ cấu & sự đa dạng của Hội đồng quản trị (Board diversity thuộc G!)."
+      },
+      {
+        id: "FC22", tag: "LO 4f",
+        front: "ESG Ratings — 3 nhận định hay bị bẫy",
+        back: "1. Dùng cho cả quyết định NỘI BỘ (benchmarking, tìm điểm cải thiện), không chỉ báo cáo bên ngoài.\n2. ESG Rating CAO mới hấp dẫn nhà đầu tư hơn (không phải thấp).\n3. KHÓ so sánh giữa các công ty vì không có 1 cơ quan duy nhất hay 1 tiêu chuẩn đo lường thống nhất."
+      }
+    ];
+
+    // =========================================================================
+    // 3. LOCALSTORAGE & STATE MANAGEMENT (REQUIRED PREFIX: icaew_c4_)
+    // =========================================================================
+    const KEYS = {
+      cycleNum: "icaew_c4_cycle_num",
+      flagged: "icaew_c4_flagged",
+      history: "icaew_c4_history",
+      flashcards: "icaew_c4_flashcards"
+    };
+
+    let persisted = {
+      cycleNumber: 1,
+      flaggedIds: [],
+      cycleHistory: [],
+      fcStatus: {} // { FC1: 'mastered' | 'review' }
+    };
+
+    let state = {
+      activeTab: "quiz",     // 'quiz' | 'flashcards'
+      quizMode: "practice",  // 'practice' | 'exam'
+      cycleType: "full",     // 'full' | 'review_set'
+      order: [],
+      currentIndex: 0,
+      answers: {},           // { qId: { selected: [], checked: false, isCorrect: false } }
+      examGraded: false,
+      // Flashcards
+      fcOrder: FLASHCARDS.map(f => f.id),
+      fcFilter: "all",       // 'all' | 'review' | 'mastered'
+      fcIndex: 0,
+      fcFlipped: false
+    };
+
+    function loadPersisted() {
+      try {
+        const cNum = parseInt(localStorage.getItem(KEYS.cycleNum), 10);
+        if (!isNaN(cNum) && cNum >= 1) persisted.cycleNumber = cNum;
+
+        const flagged = JSON.parse(localStorage.getItem(KEYS.flagged) || "[]");
+        if (Array.isArray(flagged)) persisted.flaggedIds = flagged;
+
+        const history = JSON.parse(localStorage.getItem(KEYS.history) || "[]");
+        if (Array.isArray(history)) persisted.cycleHistory = history;
+
+        const fc = JSON.parse(localStorage.getItem(KEYS.flashcards) || "{}");
+        if (fc && typeof fc === "object") persisted.fcStatus = fc;
+      } catch (e) {
+        console.warn("LocalStorage load error:", e);
+      }
+    }
+
+    function savePersisted() {
+      try {
+        localStorage.setItem(KEYS.cycleNum, String(persisted.cycleNumber));
+        localStorage.setItem(KEYS.flagged, JSON.stringify(persisted.flaggedIds));
+        localStorage.setItem(KEYS.history, JSON.stringify(persisted.cycleHistory));
+        localStorage.setItem(KEYS.flashcards, JSON.stringify(persisted.fcStatus));
+      } catch (e) {
+        console.warn("LocalStorage save error:", e);
+      }
+    }
+
+    // Fisher-Yates shuffle
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getQuestionById(id) {
+      return QUESTIONS.find(q => q.id === id);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.add("hidden"), 2400);
+    }
+
+    // Split scenario and requirement nicely if "\n\nRequirement" exists
+    function splitQuestionParts(fullText) {
+      const idx = fullText.indexOf("\n\nRequirement");
+      if (idx !== -1) {
+        return {
+          scenario: fullText.slice(0, idx).trim(),
+          requirement: fullText.slice(idx + 2).trim()
+        };
+      }
+      return { scenario: "", requirement: fullText };
+    }
+
+    // =========================================================================
+    // 4. TAB SWITCHING
+    // =========================================================================
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.getElementById("view-quiz").classList.toggle("hidden", tab !== "quiz");
+      document.getElementById("view-flashcards").classList.toggle("hidden", tab !== "flashcards");
+
+      const btnQuiz = document.getElementById("tab-quiz");
+      const btnFc = document.getElementById("tab-flashcards");
+      if (tab === "quiz") {
+        btnQuiz.className = "flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-[#047857] shadow-sm";
+        btnFc.className = "flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900";
+        renderQuiz();
+      } else {
+        btnFc.className = "flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-[#047857] shadow-sm";
+        btnQuiz.className = "flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900";
+        renderFlashcard();
+      }
+    }
+
+    function updateFlagCounter() {
+      document.getElementById("header-flag-count").textContent = persisted.flaggedIds.length;
+    }
+
+    // =========================================================================
+    // 5. QUIZ ENGINE (PRACTICE & EXAM MODES)
+    // =========================================================================
+    function startNewCycle(incrementNumber = true, customIds = null, customType = "full") {
+      closeAllModals();
+
+      if (incrementNumber && !customIds) {
+        persisted.cycleNumber += 1;
+        savePersisted();
+      }
+
+      state.cycleType = customIds ? customType : "full";
+      const ids = customIds ? customIds : QUESTIONS.map(q => q.id);
+      state.order = shuffleArray(ids);
+      state.currentIndex = 0;
+      state.answers = {};
+      state.examGraded = false;
+
+      if (state.activeTab !== "quiz") switchTab("quiz");
+      else renderQuiz();
+
+      if (customType === "review_set") {
+        showToast(`Bắt đầu luyện riêng ${ids.length} câu sai & phân vân!`);
+      } else {
+        showToast(`Đã xáo trộn chu kỳ #${persisted.cycleNumber} (${ids.length} câu)`);
+      }
+    }
+
+    function setQuizMode(mode) {
+      if (state.quizMode === mode) return;
+      state.quizMode = mode;
+
+      const btnP = document.getElementById("mode-practice");
+      const btnE = document.getElementById("mode-exam");
+      if (mode === "practice") {
+        btnP.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-[#059669] text-white shadow-sm";
+        btnE.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900";
+      } else {
+        btnE.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-[#059669] text-white shadow-sm";
+        btnP.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900";
+      }
+
+      state.answers = {};
+      state.examGraded = false;
+      state.currentIndex = 0;
+      renderQuiz();
+      showToast(mode === "practice" ? "Chế độ Luyện tập: Hiện đáp án & giải thích ngay" : "Chế độ Kiểm tra: Nộp bài cuối chu kỳ mới chấm điểm");
+    }
+
+    function checkExactMatch(selected, correct) {
+      if (selected.length !== correct.length) return false;
+      const s = [...selected].sort();
+      const c = [...correct].sort();
+      return s.every((v, i) => v === c[i]);
+    }
+
+    function selectOption(optionKey) {
+      const qId = state.order[state.currentIndex];
+      const q = getQuestionById(qId);
+      const ans = state.answers[qId] || { selected: [], checked: false, isCorrect: false };
+
+      if ((state.quizMode === "practice" && ans.checked) || (state.quizMode === "exam" && state.examGraded)) {
+        return;
+      }
+
+      if (q.selectCount === 1) {
+        ans.selected = [optionKey];
+        if (state.quizMode === "practice") {
+          ans.checked = true;
+          ans.isCorrect = checkExactMatch(ans.selected, q.ans);
+        }
+      } else {
+        if (ans.selected.includes(optionKey)) {
+          ans.selected = ans.selected.filter(k => k !== optionKey);
+        } else {
+          if (ans.selected.length < q.selectCount) {
+            ans.selected.push(optionKey);
+          } else {
+            showToast(`Câu này chỉ chọn tối đa ${q.selectCount} đáp án.`);
+            return;
+          }
+        }
+      }
+
+      state.answers[qId] = ans;
+      renderQuiz();
+    }
+
+    function submitMultiPractice() {
+      const qId = state.order[state.currentIndex];
+      const q = getQuestionById(qId);
+      const ans = state.answers[qId];
+      if (!ans || ans.selected.length === 0) {
+        showToast(`Hãy chọn ${q.selectCount} đáp án trước khi kiểm tra.`);
+        return;
+      }
+      ans.checked = true;
+      ans.isCorrect = checkExactMatch(ans.selected, q.ans);
+      state.answers[qId] = ans;
+      renderQuiz();
+    }
+
+    function toggleFlagCurrent() {
+      const qId = state.order[state.currentIndex];
+      if (persisted.flaggedIds.includes(qId)) {
+        persisted.flaggedIds = persisted.flaggedIds.filter(id => id !== qId);
+        showToast(`Đã bỏ đánh dấu ${qId}`);
+      } else {
+        persisted.flaggedIds.push(qId);
+        showToast(`Đã đánh dấu ${qId} (Phân vân / Chọn lụi)`);
+      }
+      savePersisted();
+      updateFlagCounter();
+      renderQuiz();
+    }
+
+    function prevQuestion() {
+      if (state.currentIndex > 0) {
+        state.currentIndex--;
+        renderQuiz();
+      }
+    }
+
+    function nextQuestion() {
+      if (state.currentIndex < state.order.length - 1) {
+        state.currentIndex++;
+        renderQuiz();
+      } else {
+        finishCycle();
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      state.currentIndex = idx;
+      closeNavigatorDrawer();
+      renderQuiz();
+    }
+
+    function finishCycle() {
+      const total = state.order.length;
+      let correctCount = 0;
+      let wrongCount = 0;
+      let flaggedInCycle = 0;
+
+      state.order.forEach(qId => {
+        const q = getQuestionById(qId);
+        const ans = state.answers[qId] || { selected: [], checked: false, isCorrect: false };
+        ans.checked = true;
+        ans.isCorrect = checkExactMatch(ans.selected, q.ans);
+        state.answers[qId] = ans;
+
+        if (ans.isCorrect) correctCount++;
+        else wrongCount++;
+
+        if (persisted.flaggedIds.includes(qId)) flaggedInCycle++;
+      });
+
+      const alreadyGraded = state.examGraded;
+      state.examGraded = true;
+
+      const accuracyRate = Math.round((correctCount / total) * 100);
+      const errorRate = Math.round((wrongCount / total) * 100);
+
+      if (!alreadyGraded) {
+        const label = state.cycleType === "full"
+          ? `Chu kỳ #${persisted.cycleNumber}`
+          : `Ôn sai & phân vân (${total} câu)`;
+
+        persisted.cycleHistory.unshift({
+          cycle: label,
+          date: new Date().toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }),
+          mode: state.quizMode === "practice" ? "Luyện tập" : "Kiểm tra",
+          total,
+          correct: correctCount,
+          wrong: wrongCount,
+          errorRate,
+          flagged: flaggedInCycle
+        });
+        if (persisted.cycleHistory.length > 30) persisted.cycleHistory.pop();
+        savePersisted();
+      }
+
+      document.getElementById("modal-cycle-subtitle").textContent =
+        `${state.cycleType === "full" ? "Chu kỳ #" + persisted.cycleNumber : "Phiên ôn tập trung"} • ${state.quizMode === "practice" ? "Chế độ Luyện tập" : "Chế độ Kiểm tra"} (${total} câu)`;
+      document.getElementById("modal-correct").textContent = `${correctCount}/${total} (${accuracyRate}%)`;
+      document.getElementById("modal-wrong").textContent = wrongCount;
+      document.getElementById("modal-error-rate").textContent = `${errorRate}%`;
+      document.getElementById("modal-flagged").textContent = flaggedInCycle;
+
+      const wrongIds = state.order.filter(id => !state.answers[id]?.isCorrect);
+      const combinedSet = Array.from(new Set([...wrongIds, ...persisted.flaggedIds]));
+      const reviewBtn = document.getElementById("modal-btn-wrong-and-flagged");
+      reviewBtn.classList.toggle("hidden", combinedSet.length === 0);
+      reviewBtn.textContent = `Luyện riêng câu sai & phân vân (${combinedSet.length} câu)`;
+
+      const preview = document.getElementById("modal-history-preview");
+      const recent = persisted.cycleHistory.slice(0, 4);
+      preview.innerHTML = `
+        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Lịch sử chu kỳ gần đây</p>
+        <div class="space-y-1.5 text-xs">
+          ${recent.map(h => `
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-700">${h.cycle} <span class="text-slate-400 font-normal">(${h.date})</span></span>
+              <span class="font-bold ${h.errorRate > 25 ? 'text-rose-600' : 'text-emerald-600'}">Sai ${h.errorRate}% (${h.correct}/${h.total})</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+      renderQuiz();
+      openSummaryModal();
+    }
+
+    function startWrongAndFlaggedCycle() {
+      const wrongIds = state.order.filter(qId => {
+        const a = state.answers[qId];
+        return a && a.checked && !a.isCorrect;
+      });
+      const combined = Array.from(new Set([...wrongIds, ...persisted.flaggedIds]));
+      if (combined.length === 0) {
+        showToast("Chưa có câu sai hoặc câu phân vân nào để luyện riêng!");
+        return;
+      }
+      startNewCycle(false, combined, "review_set");
+    }
+
+    function renderQuiz() {
+      const total = state.order.length;
+      const qId = state.order[state.currentIndex];
+      const q = getQuestionById(qId);
+      const ans = state.answers[qId] || { selected: [], checked: false, isCorrect: false };
+      const isFlagged = persisted.flaggedIds.includes(qId);
+      const showFeedback = (state.quizMode === "practice" && ans.checked) || (state.quizMode === "exam" && state.examGraded);
+
+      // Cycle Badge
+      document.getElementById("cycle-badge").textContent = state.cycleType === "full"
+        ? `Chu kỳ #${persisted.cycleNumber} (${total} câu)`
+        : `Ôn sai & phân vân (${total} câu)`;
+
+      // Exam Submit Button
+      document.getElementById("btn-submit-exam").classList.toggle("hidden", !(state.quizMode === "exam" && !state.examGraded));
+
+      // Exam Graded Banner
+      const banner = document.getElementById("exam-review-banner");
+      if (state.quizMode === "exam" && state.examGraded) {
+        const correctCount = state.order.filter(id => state.answers[id]?.isCorrect).length;
+        const acc = Math.round((correctCount / total) * 100);
+        document.getElementById("exam-review-stats").textContent = `Đúng ${correctCount}/${total} câu (${acc}%) • Tỷ lệ sai: ${100 - acc}%`;
+        banner.classList.remove("hidden");
+      } else {
+        banner.classList.add("hidden");
+      }
+
+      // Progress & Live Error Rate
+      const answeredCount = state.order.filter(id => {
+        const a = state.answers[id];
+        if (!a) return false;
+        return state.quizMode === "practice" ? a.checked : a.selected.length > 0;
+      }).length;
+      const pct = Math.round((answeredCount / total) * 100);
+      document.getElementById("progress-text").textContent = `${answeredCount} / ${total} câu (${pct}%)`;
+      document.getElementById("progress-bar").style.width = `${pct}%`;
+
+      const correctBadge = document.getElementById("live-correct-badge");
+      const wrongBadge = document.getElementById("live-wrong-badge");
+      if ((state.quizMode === "practice" && answeredCount > 0) || state.examGraded) {
+        const checkedIds = state.order.filter(id => state.answers[id]?.checked);
+        const correctSoFar = checkedIds.filter(id => state.answers[id].isCorrect).length;
+        const wrongSoFar = checkedIds.length - correctSoFar;
+        const errPct = checkedIds.length > 0 ? Math.round((wrongSoFar / checkedIds.length) * 100) : 0;
+
+        correctBadge.textContent = `Đúng: ${correctSoFar}`;
+        wrongBadge.textContent = `Tỷ lệ sai: ${errPct}% (${wrongSoFar} câu)`;
+        correctBadge.classList.remove("hidden");
+        wrongBadge.classList.remove("hidden");
+      } else {
+        correctBadge.classList.add("hidden");
+        wrongBadge.classList.add("hidden");
+      }
+
+      // Card Meta
+      document.getElementById("q-position").textContent = `Câu ${state.currentIndex + 1} / ${total}`;
+      document.getElementById("q-original-id").textContent = q.id;
+      document.getElementById("q-lo-badge").textContent = q.lo;
+
+      const typeBadge = document.getElementById("q-type-badge");
+      if (q.selectCount > 1) {
+        typeBadge.className = "px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200";
+        typeBadge.textContent = `Chọn ${q.selectCount} đáp án`;
+      } else {
+        typeBadge.className = "px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold";
+        typeBadge.textContent = "Chọn 1 đáp án";
+      }
+
+      // Flag Button Styling
+      const btnFlag = document.getElementById("btn-flag");
+      const btnFlagText = document.getElementById("btn-flag-text");
+      if (isFlagged) {
+        btnFlag.className = "flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all bg-amber-100 border-amber-300 text-amber-900 shadow-xs";
+        btnFlagText.textContent = "Đã đánh dấu phân vân";
+      } else {
+        btnFlag.className = "flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+        btnFlagText.textContent = "Phân vân / Chọn lụi";
+      }
+
+      // Render Scenario & Requirement
+      const parts = splitQuestionParts(q.q);
+      const scenarioBox = document.getElementById("q-scenario-box");
+      if (parts.scenario) {
+        scenarioBox.classList.remove("hidden");
+        document.getElementById("q-scenario-text").textContent = parts.scenario;
+      } else {
+        scenarioBox.classList.add("hidden");
+      }
+      document.getElementById("q-text").textContent = parts.requirement;
+
+      // Render Options
+      const optionsEl = document.getElementById("q-options");
+      optionsEl.innerHTML = "";
+      q.opts.forEach(opt => {
+        const isSelected = ans.selected.includes(opt.k);
+        const isCorrectOpt = q.ans.includes(opt.k);
+
+        let btnClasses = "w-full text-left p-3.5 sm:p-4 rounded-2xl border-2 transition-all flex items-start gap-3 ";
+        let badgeClasses = "w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ";
+
+        if (showFeedback) {
+          if (isCorrectOpt) {
+            btnClasses += "bg-emerald-50 border-emerald-500 text-emerald-950";
+            badgeClasses += "bg-[#059669] text-white";
+          } else if (isSelected && !isCorrectOpt) {
+            btnClasses += "bg-rose-50 border-rose-400 text-rose-950";
+            badgeClasses += "bg-rose-500 text-white";
+          } else {
+            btnClasses += "bg-slate-50/70 border-slate-100 text-slate-400";
+            badgeClasses += "bg-slate-200 text-slate-500";
+          }
+        } else {
+          if (isSelected) {
+            btnClasses += "bg-teal-50 border-teal-500 text-teal-950 shadow-xs";
+            badgeClasses += "bg-teal-600 text-white";
+          } else {
+            btnClasses += "bg-white border-slate-200 hover:border-emerald-300 hover:bg-slate-50 text-slate-800";
+            badgeClasses += "bg-slate-100 text-slate-600";
+          }
+        }
+
+        const btn = document.createElement("button");
+        btn.className = btnClasses;
+        btn.onclick = () => selectOption(opt.k);
+        btn.innerHTML = `
+          <span class="${badgeClasses}">${opt.k}</span>
+          <span class="text-sm sm:text-[15px] leading-snug font-medium flex-1">${opt.t}</span>
+          ${showFeedback && isCorrectOpt ? '<span class="text-[#059669] font-bold text-sm shrink-0">✓</span>' : ''}
+          ${showFeedback && isSelected && !isCorrectOpt ? '<span class="text-rose-500 font-bold text-sm shrink-0">✕</span>' : ''}
+        `;
+        optionsEl.appendChild(btn);
+      });
+
+      // Multi-select Check Button (Practice Mode)
+      document.getElementById("multi-check-wrap").classList.toggle("hidden", !(q.selectCount > 1 && state.quizMode === "practice" && !ans.checked));
+
+      // Official Solution Box
+      const expBox = document.getElementById("explanation-box");
+      if (showFeedback) {
+        expBox.classList.remove("hidden");
+        const statusBadge = document.getElementById("exp-status-badge");
+        if (ans.isCorrect) {
+          expBox.className = "mt-6 p-4 sm:p-5 rounded-2xl border bg-emerald-50/70 border-emerald-200";
+          statusBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#059669] text-white";
+          statusBadge.textContent = "Chính xác!";
+        } else {
+          expBox.className = "mt-6 p-4 sm:p-5 rounded-2xl border bg-rose-50/70 border-rose-200";
+          statusBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-600 text-white";
+          statusBadge.textContent = "Chưa đúng";
+        }
+        document.getElementById("exp-lo-tag").textContent = q.lo;
+        document.getElementById("exp-correct-answer").textContent = `Đáp án đúng: ${q.ans.join(", ")}`;
+        document.getElementById("exp-text").textContent = q.exp;
+      } else {
+        expBox.classList.add("hidden");
+      }
+
+      // Prev / Next Buttons
+      document.getElementById("btn-prev").disabled = state.currentIndex === 0;
+      document.getElementById("btn-next").textContent = state.currentIndex === total - 1
+        ? (state.examGraded ? "Xem tổng kết" : (state.quizMode === "exam" ? "Nộp bài & Chấm điểm ✓" : "Hoàn thành chu kỳ ✓"))
+        : "Câu tiếp →";
+    }
+
+    // =========================================================================
+    // 6. MODALS & DRAWERS
+    // =========================================================================
+    function openNavigatorDrawer() {
+      const grid = document.getElementById("nav-grid");
+      grid.innerHTML = "";
+      document.getElementById("nav-modal-subtitle").textContent = `Đang ở câu ${state.currentIndex + 1} / ${state.order.length}`;
+
+      state.order.forEach((id, idx) => {
+        const a = state.answers[id];
+        const flagged = persisted.flaggedIds.includes(id);
+        let cls = "h-10 rounded-xl text-xs font-bold transition-all relative flex items-center justify-center border ";
+        if (idx === state.currentIndex) cls += "ring-2 ring-slate-900 ring-offset-1 ";
+
+        if (a && (state.quizMode === "practice" ? a.checked : state.examGraded)) {
+          cls += a.isCorrect ? "bg-emerald-500 text-white border-emerald-600" : "bg-rose-500 text-white border-rose-600";
+        } else if (a && a.selected.length > 0) {
+          cls += "bg-teal-500 text-white border-teal-600";
+        } else {
+          cls += "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100";
+        }
+
+        const btn = document.createElement("button");
+        btn.className = cls;
+        btn.onclick = () => jumpToQuestion(idx);
+        btn.innerHTML = `${idx + 1}${flagged ? '<span class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-amber-400 border-2 border-white"></span>' : ''}`;
+        grid.appendChild(btn);
+      });
+
+      document.getElementById("navigator-modal").classList.remove("hidden");
+    }
+
+    function closeNavigatorDrawer() { document.getElementById("navigator-modal").classList.add("hidden"); }
+
+    function openFlaggedDrawer() {
+      const count = persisted.flaggedIds.length;
+      const wrongCount = state.order.filter(id => state.answers[id]?.checked && !state.answers[id]?.isCorrect).length;
+      document.getElementById("flagged-modal-count").textContent = `${count} câu đã đánh dấu`;
+      document.getElementById("btn-practice-flagged-modal").disabled = (count + wrongCount) === 0;
+
+      const listEl = document.getElementById("flagged-modal-list");
+      if (count === 0) {
+        listEl.innerHTML = `<p class="text-sm text-slate-400 italic py-8 text-center">Chưa có câu nào được đánh dấu Phân vân / Chọn lụi.</p>`;
+      } else {
+        listEl.innerHTML = persisted.flaggedIds.map(id => {
+          const q = getQuestionById(id);
+          if (!q) return "";
+          const parts = splitQuestionParts(q.q);
+          return `
+            <div class="p-4 rounded-2xl border border-amber-200 bg-amber-50/40 flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-bold">${q.id}</span>
+                  <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-[#047857] text-[11px] font-semibold">${q.lo}</span>
+                  <span class="text-xs font-bold text-emerald-700">Đáp án: ${q.ans.join(", ")}</span>
+                </div>
+                <p class="text-sm font-semibold text-slate-900">${parts.requirement}</p>
+                <p class="text-xs text-slate-600 leading-relaxed">${q.exp}</p>
+              </div>
+              <button onclick="removeFlagged('${q.id}')" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-xs font-semibold text-slate-600 shrink-0">
+                Bỏ đánh dấu
+              </button>
+            </div>
+          `;
+        }).join("");
+      }
+
+      document.getElementById("flagged-modal").classList.remove("hidden");
+    }
+
+    function closeFlaggedDrawer() { document.getElementById("flagged-modal").classList.add("hidden"); }
+
+    function removeFlagged(qId) {
+      persisted.flaggedIds = persisted.flaggedIds.filter(id => id !== qId);
+      savePersisted();
+      updateFlagCounter();
+      openFlaggedDrawer();
+      renderQuiz();
+    }
+
+    function openHistoryModal() {
+      const body = document.getElementById("history-modal-body");
+      if (persisted.cycleHistory.length === 0) {
+        body.innerHTML = `<p class="text-sm text-slate-400 italic py-8 text-center">Chưa có chu kỳ nào hoàn thành. Hãy hoàn thành 1 chu kỳ để theo dõi tỷ lệ sai.</p>`;
+      } else {
+        body.innerHTML = `
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b border-slate-200 text-slate-500">
+                  <th class="py-2.5 pr-3 font-semibold">Chu kỳ</th>
+                  <th class="py-2.5 px-3 font-semibold">Thời gian</th>
+                  <th class="py-2.5 px-3 font-semibold">Chế độ</th>
+                  <th class="py-2.5 px-3 font-semibold">Đúng</th>
+                  <th class="py-2.5 px-3 font-semibold">Tỷ lệ sai</th>
+                  <th class="py-2.5 pl-3 font-semibold">Phân vân</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${persisted.cycleHistory.map(h => `
+                  <tr>
+                    <td class="py-2.5 pr-3 font-bold text-slate-800">${h.cycle}</td>
+                    <td class="py-2.5 px-3 text-slate-500">${h.date}</td>
+                    <td class="py-2.5 px-3 text-slate-600">${h.mode}</td>
+                    <td class="py-2.5 px-3 font-semibold text-emerald-700">${h.correct}/${h.total}</td>
+                    <td class="py-2.5 px-3 font-bold ${h.errorRate > 25 ? 'text-rose-600' : 'text-emerald-600'}">${h.errorRate}%</td>
+                    <td class="py-2.5 pl-3 text-amber-700 font-semibold">${h.flagged}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+      cancelResetConfirm();
+      document.getElementById("history-modal").classList.remove("hidden");
+    }
+
+    function closeHistoryModal() { document.getElementById("history-modal").classList.add("hidden"); }
+
+    function showResetConfirm() {
+      document.getElementById("reset-confirm-area").innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-600">Xác nhận xóa dữ liệu C4?</span>
+          <button onclick="confirmResetAll()" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-xs font-semibold">Xóa</button>
+          <button onclick="cancelResetConfirm()" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold">Hủy</button>
+        </div>
+      `;
+    }
+
+    function cancelResetConfirm() {
+      const area = document.getElementById("reset-confirm-area");
+      if (area) {
+        area.innerHTML = `
+          <button onclick="showResetConfirm()" class="text-xs font-semibold text-rose-600 hover:text-rose-800 underline">
+            Đặt lại toàn bộ dữ liệu Chapter 4
+          </button>
+        `;
+      }
+    }
+
+    function confirmResetAll() {
+      persisted = { cycleNumber: 1, flaggedIds: [], cycleHistory: [], fcStatus: {} };
+      savePersisted();
+      updateFlagCounter();
+      closeHistoryModal();
+      startNewCycle(false);
+      renderFlashcard();
+      showToast("Đã đặt lại toàn bộ dữ liệu Chapter 4.");
+    }
+
+    function openSummaryModal() { document.getElementById("summary-modal").classList.remove("hidden"); }
+    function closeSummaryModal() { document.getElementById("summary-modal").classList.add("hidden"); }
+    function closeAllModals() {
+      closeSummaryModal();
+      closeNavigatorDrawer();
+      closeFlaggedDrawer();
+      closeHistoryModal();
+    }
+
+    // =========================================================================
+    // 7. FLASHCARDS ENGINE (22 CARDS, 3 FILTERS, 3D FLIP)
+    // =========================================================================
+    function getActiveFlashcardIds() {
+      if (state.fcFilter === "review") {
+        return state.fcOrder.filter(id => persisted.fcStatus[id] !== "mastered");
+      }
+      if (state.fcFilter === "mastered") {
+        return state.fcOrder.filter(id => persisted.fcStatus[id] === "mastered");
+      }
+      return state.fcOrder;
+    }
+
+    function setFlashcardFilter(filter) {
+      state.fcFilter = filter;
+      state.fcIndex = 0;
+      state.fcFlipped = false;
+
+      ["all", "review", "mastered"].forEach(f => {
+        const btn = document.getElementById(`fc-filter-${f}`);
+        if (f === filter) {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#047857] shadow-sm";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600";
+        }
+      });
+      renderFlashcard();
+    }
+
+    function shuffleFlashcards() {
+      state.fcOrder = shuffleArray(state.fcOrder);
+      state.fcIndex = 0;
+      state.fcFlipped = false;
+      renderFlashcard();
+      showToast("Đã xáo trộn 22 thẻ Flashcards!");
+    }
+
+    function flipFlashcard() {
+      state.fcFlipped = !state.fcFlipped;
+      document.getElementById("fc-card").classList.toggle("rotate-y-180", state.fcFlipped);
+    }
+
+    function markFlashcard(status) {
+      const list = getActiveFlashcardIds();
+      if (list.length === 0) return;
+
+      const fcId = list[state.fcIndex];
+      persisted.fcStatus[fcId] = status;
+      savePersisted();
+
+      showToast(status === "mastered" ? "Đã đánh dấu: Đã nhớ ✓" : "Đã đánh dấu: Cần ôn lại");
+      state.fcFlipped = false;
+
+      const nextList = getActiveFlashcardIds();
+      if (state.fcIndex >= nextList.length) {
+        state.fcIndex = Math.max(0, nextList.length - 1);
+      } else if (state.fcFilter === "all" && state.fcIndex < nextList.length - 1) {
+        state.fcIndex++;
+      }
+      renderFlashcard();
+    }
+
+    function prevFlashcard() {
+      const list = getActiveFlashcardIds();
+      if (list.length === 0) return;
+      state.fcIndex = (state.fcIndex - 1 + list.length) % list.length;
+      state.fcFlipped = false;
+      renderFlashcard();
+    }
+
+    function nextFlashcard() {
+      const list = getActiveFlashcardIds();
+      if (list.length === 0) return;
+      state.fcIndex = (state.fcIndex + 1) % list.length;
+      state.fcFlipped = false;
+      renderFlashcard();
+    }
+
+    function renderFlashcard() {
+      const totalAll = FLASHCARDS.length;
+      const masteredCount = FLASHCARDS.filter(f => persisted.fcStatus[f.id] === "mastered").length;
+      const reviewCount = totalAll - masteredCount;
+      const pct = Math.round((masteredCount / totalAll) * 100);
+
+      document.getElementById("fc-total-count").textContent = totalAll;
+      document.getElementById("fc-review-count").textContent = reviewCount;
+      document.getElementById("fc-mastered-count").textContent = masteredCount;
+      document.getElementById("fc-mastered-stats").textContent = `Đã nhớ: ${masteredCount} / ${totalAll} (${pct}%)`;
+      document.getElementById("fc-progress-bar").style.width = `${pct}%`;
+
+      const list = getActiveFlashcardIds();
+      document.getElementById("fc-card").classList.toggle("rotate-y-180", state.fcFlipped);
+
+      if (list.length === 0) {
+        document.getElementById("fc-position").textContent = "0 / 0";
+        document.getElementById("fc-front-tag").textContent = "Chapter 4";
+        document.getElementById("fc-status-pill").className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600";
+        document.getElementById("fc-status-pill").textContent = "Danh sách trống";
+        document.getElementById("fc-front-text").textContent = state.fcFilter === "mastered"
+          ? "Bạn chưa đánh dấu thẻ nào là 'Đã nhớ'."
+          : "Tuyệt vời! Bạn đã nhớ toàn bộ 22 Flashcards Chapter 4.";
+        document.getElementById("fc-back-text").textContent = "Chuyển bộ lọc sang 'Tất cả' để ôn lại từ đầu.";
+        document.getElementById("fc-back-tag").textContent = "";
+        return;
+      }
+
+      if (state.fcIndex >= list.length) state.fcIndex = 0;
+      const fc = FLASHCARDS.find(f => f.id === list[state.fcIndex]);
+      const status = persisted.fcStatus[fc.id];
+
+      document.getElementById("fc-position").textContent = `Thẻ ${state.fcIndex + 1} / ${list.length}`;
+      document.getElementById("fc-front-tag").textContent = `${fc.id} • ${fc.tag}`;
+      document.getElementById("fc-back-tag").textContent = fc.tag;
+      document.getElementById("fc-front-text").textContent = fc.front;
+      document.getElementById("fc-back-text").textContent = fc.back;
+
+      const pill = document.getElementById("fc-status-pill");
+      if (status === "mastered") {
+        pill.className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700";
+        pill.textContent = "✓ Đã nhớ";
+      } else if (status === "review") {
+        pill.className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900";
+        pill.textContent = "Cần ôn lại";
+      } else {
+        pill.className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500";
+        pill.textContent = "Chưa đánh giá";
+      }
+    }
+
+    // =========================================================================
+    // 8. KEYBOARD SHORTCUTS & INITIALIZATION
+    // =========================================================================
+    document.addEventListener("keydown", (e) => {
+      const anyModalOpen =
+        !document.getElementById("summary-modal").classList.contains("hidden") ||
+        !document.getElementById("navigator-modal").classList.contains("hidden") ||
+        !document.getElementById("flagged-modal").classList.contains("hidden") ||
+        !document.getElementById("history-modal").classList.contains("hidden");
+
+      if (anyModalOpen) {
+        if (e.key === "Escape") closeAllModals();
+        return;
+      }
+
+      if (state.activeTab === "quiz") {
+        if (e.key === "ArrowLeft") prevQuestion();
+        if (e.key === "ArrowRight") nextQuestion();
+      } else if (state.activeTab === "flashcards") {
+        if (e.code === "Space") {
+          e.preventDefault();
+          flipFlashcard();
+        } else if (e.key === "ArrowLeft") {
+          prevFlashcard();
+        } else if (e.key === "ArrowRight") {
+          nextFlashcard();
+        }
+      }
+    });
+
+    // Boot App
+    loadPersisted();
+    state.order = shuffleArray(QUESTIONS.map(q => q.id));
+    updateFlagCounter();
+    renderQuiz();
+  </script>
+</body>
+</html>
